@@ -34,24 +34,7 @@ int main(int argc, char *argv[]) {
         char ch{};
         bool find{};
         while (inputFile.get(ch)) {
-            /*if (ch == '\n')
-            {
-                for (size_t i = 0; i < strLength; i++)
-                {
-                    char c = ringBuffer[(begin + i) % strLength];
-                    if (c == '\0') break;
-                    ringBuffer[(begin + i) % strLength] = '\0';
-                    outputFile.put(c);
-                }
-                begin = end = size_t(0);
-                ringBuffer[begin] = '\n';
-            }*/
-            if (ringBuffer[begin] == '\0')
-            {
-                ringBuffer[begin] = ch;
-                end = ++end % strLength;
-            }
-            else if (begin != end)
+            if (ringBuffer[begin] == '\0' || begin != end)
             {
                 ringBuffer[end] = ch;
                 end = ++end % strLength;
