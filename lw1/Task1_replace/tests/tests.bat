@@ -9,6 +9,16 @@ echo replace.exe .\correct\in\empty.txt .\correct\out\empty.txt empty ######
 replace.exe .\correct\in\empty.txt .\correct\out\empty.txt empty ######
 fc .\correct\out\empty.txt .\correct\compare\empty.txt
 if errorlevel 1 (@echo !!!!!!!!!!!!!!!!!!!!Not Ok!!!!!!!!!!!!!!!!!!!!!) else echo ----------------------Ok-----------------------
+echo -------- One symbol without LN file test ------
+echo replace.exe .\correct\in\one_symbol.txt .\correct\out\one_symbol.txt empty ######
+replace.exe .\correct\in\one_symbol.txt .\correct\out\one_symbol.txt empty ######
+fc .\correct\out\one_symbol.txt .\correct\compare\one_symbol.txt
+if errorlevel 1 (@echo !!!!!!!!!!!!!!!!!!!!Not Ok!!!!!!!!!!!!!!!!!!!!!) else echo ----------------------Ok-----------------------
+echo ---------- One symbol with LN file test -------
+echo replace.exe .\correct\in\one_symbol_with_ln.txt .\correct\out\one_symbol_with_ln.txt empty ######
+replace.exe .\correct\in\one_symbol_with_ln.txt .\correct\out\one_symbol_with_ln.txt empty ######
+fc .\correct\out\one_symbol_with_ln.txt .\correct\compare\one_symbol_with_ln.txt
+if errorlevel 1 (@echo !!!!!!!!!!!!!!!!!!!!Not Ok!!!!!!!!!!!!!!!!!!!!!) else echo ----------------------Ok-----------------------
 echo ---------------- Non result test --------------
 echo replace.exe .\correct\in\readme.txt .\correct\out\non_result.txt haha ######
 replace.exe .\correct\in\readme.txt .\correct\out\non_result.txt haha ######

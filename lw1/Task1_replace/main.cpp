@@ -3,9 +3,6 @@
 #include <cstring>
 #include <memory>
 
-template<typename T, size_t N>
-size_t size(const T (&data)[N]) { return N; }
-
 int main(int argc, char *argv[]) {
     if (argc < 5)
     {
@@ -35,14 +32,61 @@ int main(int argc, char *argv[]) {
         size_t begin{};
         size_t end{};
         char ch{};
-        do {
-            inputFile.get(ch);
-            ringBuffer[end] = ch;
-            end = ++end % strLength;
-        } while (ch != '\n' && end != begin && !inputFile.eof());
+        bool find{};
+        while (inputFile.get(ch)) {
+            /*if (ch == '\n')
+            {
+                for (size_t i = 0; i < strLength; i++)
+                {
+                    char c = ringBuffer[(begin + i) % strLength];
+                    if (c == '\0') break;
+                    ringBuffer[(begin + i) % strLength] = '\0';
+                    outputFile.put(c);
+                }
+                begin = end = size_t(0);
+                ringBuffer[begin] = '\n';
+            }*/
+            if (ringBuffer[begin] == '\0')
+            {
+                ringBuffer[begin] = ch;
+                end = ++end % strLength;
+            }
+            else if (begin != end)
+            {
+                ringBuffer[end] = ch;
+                end = ++end % strLength;
+            }
+            else
+            {
+                outputFile.put(ringBuffer[begin]);
+                begin = ++begin % strLength;
+                ringBuffer[end] = ch;
+                end = ++end % strLength;
+            }
+            find = true;
+            for (size_t i = 0; i < strLength; i++)
+            {
+                if (argv[3][i] != ringBuffer[(begin + i) % strLength])
+                {
+                    find = false;
+                    break;
+                }
+            }
+            if (find)
+            {
+                outputFile << argv[4];
+                for (size_t i = 0; i < strLength; i++)
+                    ringBuffer[i] = '\0';
+                begin = end = size_t(0);
+                find = false;
+            }
+        }
         for (size_t i = 0; i < strLength; i++)
-            std::cout << ringBuffer[i];
-        std::cout << std::endl;
+        {
+            char c = ringBuffer[(begin + i) % strLength];
+            if (c == '\0') break;
+            outputFile.put(c);
+        }
     }
     else
         for (char ch; inputFile.get(ch);) outputFile.put(ch);
