@@ -3,13 +3,69 @@
 #include <cstring>
 #include <memory>
 
+
+//std::string <- char*
+void ReplaceInFile(std::ifstream& inputFile, std::ofstream& outputFile, char* search, char* replace)
+{
+    size_t strLength = strlen(search);
+    if (strLength)
+    {
+        auto ringBuffer = std::make_unique<char[]>(strLength);
+        size_t begin{};
+        size_t end{};
+        char ch{};
+        while (inputFile.get(ch)) {
+            bool isBufferFilled = ringBuffer[begin] != '\0';
+            isBufferFilled &= begin == end;
+            if (isBufferFilled)
+            {
+                outputFile.put(ringBuffer[begin]);
+                begin = ++begin % strLength;
+                ringBuffer[end] = ch;
+                end = ++end % strLength;
+            }
+            else
+            {
+                ringBuffer[end] = ch;
+                end = ++end % strLength;
+            }
+            bool find = true;
+            for (size_t i = 0; i < strLength; i++)
+            {
+                size_t indexBuffer = (begin + i) % strLength;
+                if (search[i] != ringBuffer[indexBuffer])
+                {
+                    find = false;
+                    break;
+                }
+            }
+            if (find)
+            {
+                outputFile << replace;
+                for (size_t i = 0; i < strLength; i++)
+                    ringBuffer[i] = '\0';
+                begin = end = size_t(0);
+            }
+        }
+        for (size_t i = 0; i < strLength; i++)
+        {
+            char c = ringBuffer[(begin + i) % strLength];
+            if (c == '\0') break;
+            outputFile.put(c);
+        }
+    }
+    else
+        for (char ch; inputFile.get(ch);) outputFile.put(ch);
+}
+
 int main(int argc, char *argv[]) {
-    if (argc < 5)
+    if (argc != 5)
     {
         std::cout << "Error! There are no required parameters!" << std::endl;
         std::cout << "Example:" << std::endl;
-        std::cout << "-> replace.exe [file_in] [file_out] ";
-        std::cout << "[search_string] [replacement_string]" << std::endl;
+        std::cout << "-> replace.exe file_in file_out ";
+        std::cout << "search_string replacement_string" << std::endl;
+        // return 1
         exit(1);
     }
     std::ifstream inputFile(argv[1]);
@@ -25,55 +81,6 @@ int main(int argc, char *argv[]) {
         inputFile.close();
         exit(1);
     }
-    size_t strLength = strlen(argv[3]);
-    if (strLength)
-    {
-        auto ringBuffer = std::make_unique<char[]>(strLength);
-        size_t begin{};
-        size_t end{};
-        char ch{};
-        bool find{};
-        while (inputFile.get(ch)) {
-            if (ringBuffer[begin] == '\0' || begin != end)
-            {
-                ringBuffer[end] = ch;
-                end = ++end % strLength;
-            }
-            else
-            {
-                outputFile.put(ringBuffer[begin]);
-                begin = ++begin % strLength;
-                ringBuffer[end] = ch;
-                end = ++end % strLength;
-            }
-            find = true;
-            for (size_t i = 0; i < strLength; i++)
-            {
-                if (argv[3][i] != ringBuffer[(begin + i) % strLength])
-                {
-                    find = false;
-                    break;
-                }
-            }
-            if (find)
-            {
-                outputFile << argv[4];
-                for (size_t i = 0; i < strLength; i++)
-                    ringBuffer[i] = '\0';
-                begin = end = size_t(0);
-                find = false;
-            }
-        }
-        for (size_t i = 0; i < strLength; i++)
-        {
-            char c = ringBuffer[(begin + i) % strLength];
-            if (c == '\0') break;
-            outputFile.put(c);
-        }
-    }
-    else
-        for (char ch; inputFile.get(ch);) outputFile.put(ch);
-    inputFile.close();
-    outputFile.close();
+    ReplaceInFile(inputFile, outputFile, argv[3], argv[4]);
     return 0;
 }
