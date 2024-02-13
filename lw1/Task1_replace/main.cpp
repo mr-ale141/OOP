@@ -3,7 +3,7 @@
 #include <string>
 #include <chrono>
 
-#define WITH_RING_BUFFER 1
+#define WITH_RING_BUFFER 0
 
 #if WITH_RING_BUFFER
 #include <memory>

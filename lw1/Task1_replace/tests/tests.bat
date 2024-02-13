@@ -28,6 +28,8 @@ call :startTest end_file.txt choice 123456
 echo ------------- Non existent in file ------------
 echo replace.exe .\correct\in\non_existent.txt .\correct\out\non_existent.txt empty ######
 replace.exe .\correct\in\non_existent.txt .\correct\out\non_existent.txt empty ######
+echo ------------------ Timer test -----------------
+call :startTest waw.txt faire ######
 echo --------------- Zero string find --------------
 call :startTest empty_search.txt "" haha
 echo ----------- Start without parameters ----------
