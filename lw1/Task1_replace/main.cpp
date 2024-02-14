@@ -7,9 +7,21 @@
 
 #if WITH_RING_BUFFER
 #include <memory>
-void ReplaceInFile(std::ifstream& inputFile, std::ofstream& outputFile,
-                   std::string& search, std::string& replace)
+void ReplaceInFile(const std::string& inputFileName,
+                   const std::string& outputFileName,
+                   const std::string& search,
+                   const std::string& replace)
 {
+    std::ifstream inputFile(inputFileName);
+    if (!inputFile)
+    {
+        throw std::ios_base::failure("Can't open " + inputFileName);
+    }
+    std::ofstream outputFile(outputFileName, std::fstream::trunc);
+    if (!outputFile)
+    {
+        throw std::ios_base::failure("Can't open " + outputFileName);
+    }
     size_t strLength = search.length();
     if (strLength)
     {
@@ -59,6 +71,11 @@ void ReplaceInFile(std::ifstream& inputFile, std::ofstream& outputFile,
     }
     else
         for (char ch; inputFile.get(ch);) outputFile.put(ch);
+
+    if (!outputFile.flush())
+    {
+        throw std::ios_base::failure("Can't write in " + outputFileName);
+    }
 }
 #else
 // кмп алгоритм, std::search
@@ -73,7 +90,7 @@ std::string ReplaceString(const std::string& subject,
     while (pos < subject.length())
     {
         size_t foundPos = subject.find(searchString, pos);
-        result.append(subject, pos, foundPos);
+        result.append(subject, pos, foundPos - pos);
         if (foundPos == std::string::npos)
             break;
         result.append(replacementString);
@@ -82,27 +99,20 @@ std::string ReplaceString(const std::string& subject,
     return result;
 }
 
-//bool
-int ReplaceInFile(std::string& inputFileName, std::string& outputFileName,
+void ReplaceInFile(std::string& inputFileName, std::string& outputFileName,
                   std::string& search, std::string& replace)
 {
     std::string line;
-
     std::ifstream inputFile(inputFileName);
     if (!inputFile)
     {
-        // исключение
-        std::cout << "Error! Input file '" << inputFileName << "' cannot be open!" << std::endl;
-        return 1;
+        throw std::ios_base::failure("Can't open " + inputFileName);
     }
     std::ofstream outputFile(outputFileName, std::fstream::trunc);
     if (!outputFile)
     {
-        std::cout << "Error! Output file '" << outputFileName << "' cannot be open!" << std::endl;
-        inputFile.close();
-        return 1;
+        throw std::ios_base::failure("Can't open " + outputFileName);
     }
-
     while (std::getline(inputFile, line))
     {
         outputFile << ReplaceString(line,
@@ -113,14 +123,10 @@ int ReplaceInFile(std::string& inputFileName, std::string& outputFileName,
 
     if (!outputFile.flush())
     {
-        std::cout << "Error! Cannot write data in '" << outputFileName << "'" << std::endl;
-        return  1;
+        throw std::ios_base::failure("Can't write in " + outputFileName);
     }
-
-    return 0;
 }
 #endif
-
 
 int main(int argc, char* argv[])
 {
@@ -139,11 +145,18 @@ int main(int argc, char* argv[])
     std::string search = argv[3];
     std::string replace = argv[4];
 
-    int result = ReplaceInFile(inputFileName, outputFileName, search, replace);
+    try
+    {
+        ReplaceInFile(inputFileName, outputFileName, search, replace);
+    }
+    catch (std::ios_base::failure& e)
+    {
+        std::cout << e.what() << std::endl;
+    }
 
     auto timeEnd = std::chrono::high_resolution_clock::now();
     auto us = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeBegin);
     std::cout << "Delta Time = " << us.count() << " us" << std::endl;
 
-    return result;
+    return 0;
 }
