@@ -61,6 +61,7 @@ void ReplaceInFile(std::ifstream& inputFile, std::ofstream& outputFile,
         for (char ch; inputFile.get(ch);) outputFile.put(ch);
 }
 #else
+// кмп алгоритм, std::search
 std::string ReplaceString(const std::string& subject,
                           const std::string& searchString,
                           const std::string& replacementString)
@@ -68,32 +69,39 @@ std::string ReplaceString(const std::string& subject,
     if (searchString.empty())
         return subject;
     size_t pos = 0;
-    // Результат будет записан в новую строку result, оставляя строку subject неизменной
-    // Какие преимущества есть у этого способа по сравнению с алгоритмом, выполняющим
-    // замену прямо в строке subject?
     std::string result;
     while (pos < subject.length())
     {
         size_t foundPos = subject.find(searchString, pos);
+        result.append(subject, pos, foundPos);
         if (foundPos == std::string::npos)
-        {
-            result.append(subject, pos);
             break;
-        }
-        else
-        {
-            result.append(subject, pos, foundPos - pos);
-            result.append(replacementString);
-            pos = foundPos + searchString.length();
-        }
+        result.append(replacementString);
+        pos = foundPos + searchString.length();
     }
     return result;
 }
 
-void ReplaceInFile(std::ifstream& inputFile, std::ofstream& outputFile,
-                   std::string& search, std::string& replace)
+//bool
+int ReplaceInFile(std::string& inputFileName, std::string& outputFileName,
+                  std::string& search, std::string& replace)
 {
     std::string line;
+
+    std::ifstream inputFile(inputFileName);
+    if (!inputFile)
+    {
+        // исключение
+        std::cout << "Error! Input file '" << inputFileName << "' cannot be open!" << std::endl;
+        return 1;
+    }
+    std::ofstream outputFile(outputFileName, std::fstream::trunc);
+    if (!outputFile)
+    {
+        std::cout << "Error! Output file '" << outputFileName << "' cannot be open!" << std::endl;
+        inputFile.close();
+        return 1;
+    }
 
     while (std::getline(inputFile, line))
     {
@@ -102,10 +110,20 @@ void ReplaceInFile(std::ifstream& inputFile, std::ofstream& outputFile,
                                     replace
                                     ) << "\n";
     }
+
+    if (!outputFile.flush())
+    {
+        std::cout << "Error! Cannot write data in '" << outputFileName << "'" << std::endl;
+        return  1;
+    }
+
+    return 0;
 }
 #endif
 
-int main(int argc, char* argv[]) {
+
+int main(int argc, char* argv[])
+{
     auto timeBegin = std::chrono::high_resolution_clock::now();
     if (argc != 5)
     {
@@ -115,29 +133,17 @@ int main(int argc, char* argv[]) {
         std::cout << "search_string replacement_string" << std::endl;
         return 1;
     }
-    std::ifstream inputFile(argv[1]);
-    if (!inputFile)
-    {
-        std::cout << "Error! Input file '" << argv[1] << "' cannot be open!" << std::endl;
-        return 1;
-    }
-    std::ofstream outputFile(argv[2], std::fstream::trunc);
-    if (!outputFile)
-    {
-        std::cout << "Error! Output file '" << argv[2] << "' cannot be open!" << std::endl;
-        inputFile.close();
-        return 1;
-    }
+
+    std::string inputFileName = argv[1];
+    std::string outputFileName = argv[2];
     std::string search = argv[3];
     std::string replace = argv[4];
 
-    ReplaceInFile(inputFile, outputFile, search, replace);
-
-    if (!outputFile.flush())
-        std::cout << "Error! Cannot write data in '" << argv[2] << "'" << std::endl;
+    int result = ReplaceInFile(inputFileName, outputFileName, search, replace);
 
     auto timeEnd = std::chrono::high_resolution_clock::now();
     auto us = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeBegin);
     std::cout << "Delta Time = " << us.count() << " us" << std::endl;
-    return 0;
+
+    return result;
 }
