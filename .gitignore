@@ -12,3 +12,8 @@ $ cat .gitignore
 .idea
 cmake-build-debug
 bin
+Debug
+Release
+v14
+*.VC.db
+*.VC.VC.opendb
