@@ -152,6 +152,7 @@ int main(int argc, char* argv[])
     catch (std::ios_base::failure& e)
     {
         std::cout << e.what() << std::endl;
+		return 1;
     }
 
     auto timeEnd = std::chrono::high_resolution_clock::now();
