@@ -9,9 +9,8 @@ TEST_CASE("Test Case empty number string")
 		std::string answer = Convert(0, 16, std::string(""));
 		REQUIRE(1 == 0);
 	}
-	catch (...)//std::exception& e)
+	catch (...)
 	{
-		//std::cout << e.what() << std::endl;
 		REQUIRE(1 == 1);
 	}
 }
@@ -23,9 +22,8 @@ TEST_CASE("Test Case out range source")
 		std::string answer = Convert(0, 16, std::string("1F"));
 		REQUIRE(1 == 0);
 	}
-	catch (...)//std::exception& e)
+	catch (...)
 	{
-		// std::cout << e.what() << std::endl;
 		REQUIRE(1 == 1);
 	}
 }
@@ -37,9 +35,8 @@ TEST_CASE("Test Case bad numberString")
 		std::string answer = Convert(10, 16, std::string("1F"));
 		REQUIRE(1 == 0);
 	}
-	catch (...)//std::exception& e)
+	catch (...)
 	{
-		// std::cout << e.what() << std::endl;
 		REQUIRE(1 == 1);
 	}
 }
@@ -84,6 +81,17 @@ TEST_CASE("Test StrToInt '0'")
 	REQUIRE(wasError == false);
 	zero = StringToInt(std::string("-0"), 10, wasError);
 	REQUIRE(zero == 0);
+	REQUIRE(wasError == false);
+}
+
+TEST_CASE("Test IntToStr 'INT_MIN and INT_MAX'")
+{
+	bool wasError = false;
+	std::string str = IntToString(-2147483648, 10, wasError);
+	REQUIRE(str == "-2147483648");
+	REQUIRE(wasError == false);
+	str = IntToString(2147483647, 10, wasError);
+	REQUIRE(str == "2147483647");
 	REQUIRE(wasError == false);
 }
 

@@ -145,6 +145,7 @@
     <ClInclude Include="..\Task2_radix\convertor.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Task2_radix\convertor.cpp" />
     <ClCompile Include="tests.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
