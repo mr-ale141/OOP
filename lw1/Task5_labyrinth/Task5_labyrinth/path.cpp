@@ -5,7 +5,7 @@ std::string GetLineUp(size_t y, SearchData& searchData)
 	std::string line;
 	if (y > 0)
 	{
-		searchData.inputFile.seekg(0, searchData.linePositions[y - 1]);
+		searchData.inputFile.seekg(searchData.linePositions[y - 1]);
 		std::getline(searchData.inputFile, line);
 	}
 	return line;
@@ -22,7 +22,7 @@ std::string GetLineCurrent(size_t y, SearchData& searchData)
 std::string GetLineDown(size_t y, SearchData& searchData)
 {
 	std::string line;
-	if (y < maxSize - 1 && searchData.linePositions[y + 1] < searchData.inputFile.end)
+	if ((y + 1) < searchData.fileSize)
 	{
 		searchData.inputFile.seekg(searchData.linePositions[y + 1]);
 		std::getline(searchData.inputFile, line);
@@ -47,7 +47,7 @@ std::shared_ptr<Node> GetPath(SearchData& searchData)
 		for (size_t j = 0; j < maxSize; j++)
 			openSet[i][j] = nullptr;
 
-	std::priority_queue<std::shared_ptr<Node>, std::vector<std::shared_ptr<Node>>> queue;
+	std::priority_queue<std::shared_ptr<Node>, std::vector<std::shared_ptr<Node>>, CompareNodes> queue;
 
 	std::ifstream& file = searchData.inputFile;
 
@@ -60,25 +60,22 @@ std::shared_ptr<Node> GetPath(SearchData& searchData)
 		auto currentNode = queue.top();
 		currentNode->isInQueue = false;
 		queue.pop();
+		//std::cout << "currentNode: X=" << currentNode->point.x+1 << "|Y=" << currentNode->point.y+1 << "|bf=" << currentNode->before << "|af=" << currentNode->after << "|sum=" << currentNode->sum << std::endl;
 
 		Point currentPoint = currentNode->point;
 
 		if (currentPoint == searchData.B)
-		{
-			startNode = currentNode->parent;
-			return startNode;
-		}
+			return currentNode->parent;
 
 		closedSet.insert(currentNode->point);
 
 		Point neighbors[4] = { Point{}, Point{}, Point{}, Point{} };
-		Point neighbor{};
 
 		std::string lineUp = GetLineUp(currentPoint.y, searchData);
 		std::string lineCurrent = GetLineCurrent(currentPoint.y, searchData);
 		std::string lineDown = GetLineDown(currentPoint.y, searchData);
 
-		if (currentPoint.x < lineUp.length() && lineUp[currentPoint.x] != '#')
+		if ((currentPoint.x < lineUp.length()) && (lineUp[currentPoint.x] != '#'))
 		{
 			Point p;
 			p.x = currentPoint.x;
@@ -86,7 +83,7 @@ std::shared_ptr<Node> GetPath(SearchData& searchData)
 			neighbors[UP] = p;
 		}
 
-		if (currentPoint.x < lineCurrent.length() - 1 && lineCurrent[currentPoint.x + 1] != '#')
+		if ((currentPoint.x < (lineCurrent.length() - 1)) && (lineCurrent[currentPoint.x + 1] != '#'))
 		{
 			Point p;
 			p.x = currentPoint.x + 1;
@@ -94,7 +91,7 @@ std::shared_ptr<Node> GetPath(SearchData& searchData)
 			neighbors[RIGHT] = p;
 		}
 
-		if (currentPoint.x < lineDown.length() && lineDown[currentPoint.x] != '#')
+		if ((currentPoint.x < lineDown.length()) && (lineDown[currentPoint.x] != '#'))
 		{
 			Point p;
 			p.x = currentPoint.x;
@@ -102,7 +99,7 @@ std::shared_ptr<Node> GetPath(SearchData& searchData)
 			neighbors[DOWN] = p;
 		}
 
-		if (currentPoint.x > 0 && lineCurrent[currentPoint.x - 1] != '#')
+		if ((currentPoint.x > 0) && (lineCurrent[currentPoint.x - 1] != '#'))
 		{
 			Point p;
 			p.x = currentPoint.x - 1;
@@ -118,7 +115,6 @@ std::shared_ptr<Node> GetPath(SearchData& searchData)
 			if (neighbor.x == maxSize || closedSet.count(neighbor))
 				continue;
 			std::shared_ptr<Node> neighborNode = openSet[neighbor.y][neighbor.x];
-			float newAfter = 0.f;
 			if (neighborNode)
 			{
 				if (neighborNode->isInQueue && newBefore < neighborNode->before)
@@ -128,6 +124,7 @@ std::shared_ptr<Node> GetPath(SearchData& searchData)
 					for (size_t j = 0; j < queueSize; j++)
 					{
 						hold[j] = queue.top();
+						//std::cout<<"J="<<j<<"|X="<<hold[j]->point.x+1<<"|Y="<<hold[j]->point.y+1<<"|bf="<<hold[j]->before<<"|af="<<hold[j]->after<<"|sum="<<hold[j]->sum<<std::endl;
 						queue.pop();
 						if (hold[j]->point == neighbor)
 						{
@@ -149,6 +146,7 @@ std::shared_ptr<Node> GetPath(SearchData& searchData)
 				newNode->updateSum();
 				newNode->parent = openSet[currentNode->point.y][currentNode->point.x];
 				newNode->isInQueue = true;
+				//std::cout << "newNode: X=" << newNode->point.x+1 << "|Y=" << newNode->point.y+1 << "|bf=" << newNode->before << "|af=" << newNode->after << "|sum=" << newNode->sum << std::endl;
 				queue.push(newNode);
 			}
 		}

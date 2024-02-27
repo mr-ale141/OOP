@@ -29,17 +29,17 @@ struct Point
 	}
 	bool operator==(const Point& p) const
 	{
-		if (x != p.x)
+		if (x != p.x || y != p.y)
 			return false;
 		else
-			return y == p.y;
+			return true;
 	}
 	bool operator!=(const Point& p) const
 	{
-		if (x == p.x)
+		if (x == p.x && y == p.y)
 			return false;
 		else
-			return y != p.y;
+			return true;
 	}
 	bool operator<(const Point& p) const
 	{
@@ -56,6 +56,7 @@ struct SearchData
 	Point A;
 	Point B;
 	std::ifstream inputFile;
+	size_t fileSize;
 };
 
 class Node
@@ -74,26 +75,19 @@ public:
 	{
 		sum = before + after;
 	}
-	bool operator<(const Node& n) const
-	{
-		return sum < n.sum;
-	}
-	/*Node operator=(const Node& n)
-	{
-		point = n.point;
-		before = n.before;
-		after = n.after;
-		sum = n.sum;
-		isInQueue = n.isInQueue;
-		parent = n.parent;
-		return *this;
-	}*/
 	Point point;
 	float before;
 	float after;
 	float sum;
 	bool isInQueue;
 	std::shared_ptr<Node> parent;
+};
+
+struct CompareNodes {
+	bool operator()(std::shared_ptr<Node> const& left, std::shared_ptr<Node> const& right)
+	{
+		return left->sum > right->sum;
+	}
 };
 
 std::shared_ptr<Node> GetPath(SearchData& searchData);

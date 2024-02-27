@@ -44,6 +44,10 @@ SearchData FindPoints(std::string& inputFileName)
 		searchData.linePositions[y] = searchData.inputFile.tellg();
 	}
 
+	searchData.fileSize = y;
+
+	searchData.inputFile.clear();
+
 	if (!isFoundA || !isFoundB)
 		throw std::invalid_argument("ERROR! Input file not contains 'A', 'B'");
 
@@ -67,10 +71,14 @@ void FindPath(std::string& inputFileName, std::string& outputFileName)
 
 	std::fstream file(outputFileName, std::fstream::in | std::fstream::out | std::fstream::binary);
 
+	char ch = '.';
+
 	while (currentNode)
 	{
-		file.seekp(currentNode->point.x, searchData.linePositions[currentNode->point.y]);
-		file.write((char *)'.', sizeof(char));
+		std::streampos pos = searchData.linePositions[currentNode->point.y] + (std::streamoff)currentNode->point.x;
+		file.seekp(pos);
+		if (currentNode->parent != nullptr)
+			file.write((char *)&ch, sizeof(char));
 		currentNode = currentNode->parent;
 	}
 
