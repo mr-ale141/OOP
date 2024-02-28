@@ -6,6 +6,7 @@
 #include <iostream>
 #include <string>
 #include <cmath>
+#include <vector>
 
 static const size_t maxSize = 100;
 
@@ -21,6 +22,12 @@ struct Point
 {
 	size_t x = maxSize;
 	size_t y = maxSize;
+	Point& operator=(std::initializer_list<size_t> args)
+	{
+		x = args.begin()[0];
+		y = args.begin()[1];
+		return *this;
+	}
 	Point& operator=(const Point& p)
 	{
 		x = p.x;
@@ -84,7 +91,7 @@ public:
 };
 
 struct CompareNodes {
-	bool operator()(std::shared_ptr<Node> const& left, std::shared_ptr<Node> const& right)
+	bool operator()(const std::shared_ptr<Node>& left, const std::shared_ptr<Node>& right)
 	{
 		return left->sum > right->sum;
 	}

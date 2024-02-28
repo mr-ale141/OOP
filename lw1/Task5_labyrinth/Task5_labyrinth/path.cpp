@@ -1,5 +1,12 @@
 #include "path.h"
 
+float GetModule(Point self, Point target)
+{
+	size_t offsetX = target.x - self.x;
+	size_t offsetY = target.y - self.y;
+	return (float)std::sqrt(offsetX * offsetX + offsetY * offsetY);
+}
+
 std::string GetLineUp(size_t y, SearchData& searchData)
 {
 	std::string line;
@@ -30,11 +37,76 @@ std::string GetLineDown(size_t y, SearchData& searchData)
 	return line;
 }
 
-float GetModule(Point self, Point target)
+std::vector<std::vector<std::shared_ptr<Node>>> GetOpenSet()
 {
-	size_t offsetX = target.x - self.x;
-	size_t offsetY = target.y - self.y;
-	return (float)std::sqrt(offsetX * offsetX + offsetY * offsetY);
+	std::vector<std::vector<std::shared_ptr<Node>>> openSet(maxSize, std::vector<std::shared_ptr<Node>>(maxSize));
+	for (size_t i = 0; i < maxSize; i++)
+		for (size_t j = 0; j < maxSize; j++)
+			openSet[i][j] = nullptr;
+	return openSet;
+}
+
+std::vector<Point> GetNeighbors(std::string& lineUp, std::string& lineCurrent, std::string& lineDown, Point& currentPoint)
+{
+	std::vector<Point> neighbors(4);
+
+	if ((currentPoint.x < lineUp.length()) && (lineUp[currentPoint.x] != '#'))
+		neighbors[UP] = { currentPoint.x, currentPoint.y - 1 };
+
+	if ((currentPoint.x < (lineCurrent.length() - 1)) && (lineCurrent[currentPoint.x + 1] != '#'))
+		neighbors[RIGHT] = { currentPoint.x + 1, currentPoint.y };
+
+	if ((currentPoint.x < lineDown.length()) && (lineDown[currentPoint.x] != '#'))
+		neighbors[DOWN] = { currentPoint.x, currentPoint.y + 1 };
+
+	if ((currentPoint.x > 0) && (lineCurrent[currentPoint.x - 1] != '#'))
+		neighbors[LEFT] = { currentPoint.x - 1, currentPoint.y };
+
+	return neighbors;
+}
+
+void UpdateNodeInQueue(
+	std::priority_queue<std::shared_ptr<Node>, std::vector<std::shared_ptr<Node>>, CompareNodes>& queue,
+	std::vector<std::vector<std::shared_ptr<Node>>>& openSet,
+	Point& neighbor,
+	std::shared_ptr<Node>& currentNode,
+	float newBefore
+)
+{
+	auto queueSize = queue.size();
+	auto hold = std::make_unique<std::shared_ptr<Node>[]>(queueSize);
+	for (size_t j = 0; j < queueSize; j++)
+	{
+		hold[j] = queue.top();
+		queue.pop();
+		if (hold[j]->point == neighbor)
+		{
+			hold[j]->before = newBefore;
+			hold[j]->updateSum();
+			hold[j]->parent = openSet[currentNode->point.y][currentNode->point.x];
+		}
+	}
+	for (size_t j = 0; j < queueSize; j++)
+		queue.push(hold[j]);
+}
+
+void PushNewNode(
+	std::priority_queue<std::shared_ptr<Node>, std::vector<std::shared_ptr<Node>>, CompareNodes>& queue,
+	std::vector<std::vector<std::shared_ptr<Node>>>& openSet,
+	std::shared_ptr<Node>& currentNode,
+	SearchData& searchData,
+	Point& neighbor,
+	float newBefore
+)
+{
+	auto newNode = std::make_shared<Node>(neighbor);
+	openSet[neighbor.y][neighbor.x] = newNode;
+	newNode->before = newBefore;
+	newNode->after = GetModule(neighbor, searchData.B);
+	newNode->updateSum();
+	newNode->parent = openSet[currentNode->point.y][currentNode->point.x];
+	newNode->isInQueue = true;
+	queue.push(newNode);
 }
 
 std::shared_ptr<Node> GetPath(SearchData& searchData)
@@ -42,10 +114,7 @@ std::shared_ptr<Node> GetPath(SearchData& searchData)
 	std::shared_ptr<Node> startNode = std::make_shared<Node>(searchData.A);
 
 	std::set<Point> closedSet;
-	std::vector<std::vector<std::shared_ptr<Node>>> openSet(maxSize, std::vector<std::shared_ptr<Node>>(maxSize));
-	for (size_t i = 0; i < maxSize; i++)
-		for (size_t j = 0; j < maxSize; j++)
-			openSet[i][j] = nullptr;
+	auto openSet = GetOpenSet();
 
 	std::priority_queue<std::shared_ptr<Node>, std::vector<std::shared_ptr<Node>>, CompareNodes> queue;
 
@@ -60,7 +129,6 @@ std::shared_ptr<Node> GetPath(SearchData& searchData)
 		auto currentNode = queue.top();
 		currentNode->isInQueue = false;
 		queue.pop();
-		//std::cout << "currentNode: X=" << currentNode->point.x+1 << "|Y=" << currentNode->point.y+1 << "|bf=" << currentNode->before << "|af=" << currentNode->after << "|sum=" << currentNode->sum << std::endl;
 
 		Point currentPoint = currentNode->point;
 
@@ -69,43 +137,11 @@ std::shared_ptr<Node> GetPath(SearchData& searchData)
 
 		closedSet.insert(currentNode->point);
 
-		Point neighbors[4] = { Point{}, Point{}, Point{}, Point{} };
+		auto lineUp = GetLineUp(currentPoint.y, searchData);
+		auto lineCurrent = GetLineCurrent(currentPoint.y, searchData);
+		auto lineDown = GetLineDown(currentPoint.y, searchData);
 
-		std::string lineUp = GetLineUp(currentPoint.y, searchData);
-		std::string lineCurrent = GetLineCurrent(currentPoint.y, searchData);
-		std::string lineDown = GetLineDown(currentPoint.y, searchData);
-
-		if ((currentPoint.x < lineUp.length()) && (lineUp[currentPoint.x] != '#'))
-		{
-			Point p;
-			p.x = currentPoint.x;
-			p.y = currentPoint.y - 1;
-			neighbors[UP] = p;
-		}
-
-		if ((currentPoint.x < (lineCurrent.length() - 1)) && (lineCurrent[currentPoint.x + 1] != '#'))
-		{
-			Point p;
-			p.x = currentPoint.x + 1;
-			p.y = currentPoint.y;
-			neighbors[RIGHT] = p;
-		}
-
-		if ((currentPoint.x < lineDown.length()) && (lineDown[currentPoint.x] != '#'))
-		{
-			Point p;
-			p.x = currentPoint.x;
-			p.y = currentPoint.y + 1;
-			neighbors[DOWN] = p;
-		}
-
-		if ((currentPoint.x > 0) && (lineCurrent[currentPoint.x - 1] != '#'))
-		{
-			Point p;
-			p.x = currentPoint.x - 1;
-			p.y = currentPoint.y;
-			neighbors[LEFT] = p;
-		}
+		auto neighbors = GetNeighbors(lineUp, lineCurrent, lineDown, currentPoint);
 		
 		float newBefore = currentNode->before + 1.f;
 		
@@ -118,36 +154,11 @@ std::shared_ptr<Node> GetPath(SearchData& searchData)
 			if (neighborNode)
 			{
 				if (neighborNode->isInQueue && newBefore < neighborNode->before)
-				{
-					auto queueSize = queue.size();
-					auto hold = std::make_unique<std::shared_ptr<Node>[]>(queueSize);
-					for (size_t j = 0; j < queueSize; j++)
-					{
-						hold[j] = queue.top();
-						//std::cout<<"J="<<j<<"|X="<<hold[j]->point.x+1<<"|Y="<<hold[j]->point.y+1<<"|bf="<<hold[j]->before<<"|af="<<hold[j]->after<<"|sum="<<hold[j]->sum<<std::endl;
-						queue.pop();
-						if (hold[j]->point == neighbor)
-						{
-							hold[j]->before = newBefore;
-							hold[j]->updateSum();
-							hold[j]->parent = openSet[currentNode->point.y][currentNode->point.x];
-						}
-					}
-					for (size_t j = 0; j < queueSize; j++)
-						queue.push(hold[j]);
-				}
+					UpdateNodeInQueue(queue, openSet, neighbor, currentNode, newBefore);
 			}
 			else
 			{
-				auto newNode = std::make_shared<Node>(neighbor);
-				openSet[neighbor.y][neighbor.x] = newNode;
-				newNode->before = newBefore;
-				newNode->after = GetModule(neighbor, searchData.B);
-				newNode->updateSum();
-				newNode->parent = openSet[currentNode->point.y][currentNode->point.x];
-				newNode->isInQueue = true;
-				//std::cout << "newNode: X=" << newNode->point.x+1 << "|Y=" << newNode->point.y+1 << "|bf=" << newNode->before << "|af=" << newNode->after << "|sum=" << newNode->sum << std::endl;
-				queue.push(newNode);
+				PushNewNode(queue, openSet, currentNode, searchData, neighbor, newBefore);
 			}
 		}
 	}
