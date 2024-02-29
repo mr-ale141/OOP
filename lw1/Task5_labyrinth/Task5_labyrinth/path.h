@@ -69,7 +69,7 @@ struct SearchData
 class Node
 {
 public:
-	explicit Node(Point newPoint)
+	explicit Node(const Point newPoint)
 	{
 		point = newPoint;
 		before = 0.f;

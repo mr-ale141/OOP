@@ -1,7 +1,7 @@
 #include "labyrinth.h"
 #include "path.h"
 
-SearchData FindPoints(std::string& inputFileName)
+SearchData FindPoints(const std::string& inputFileName)
 {
 	SearchData searchData{};
 	for (size_t i = 0; i < maxSize; i++)
@@ -54,7 +54,7 @@ SearchData FindPoints(std::string& inputFileName)
 	return searchData;
 }
 
-void FindPath(std::string& inputFileName, std::string& outputFileName)
+void FindPath(const std::string& inputFileName, const std::string& outputFileName)
 {
 
 	SearchData searchData = FindPoints(inputFileName);

@@ -1,13 +1,13 @@
 #include "path.h"
 
-float GetModule(Point self, Point target)
+float GetModule(const Point self, const Point target)
 {
 	size_t offsetX = target.x - self.x;
 	size_t offsetY = target.y - self.y;
 	return (float)std::sqrt(offsetX * offsetX + offsetY * offsetY);
 }
 
-std::string GetLineUp(size_t y, SearchData& searchData)
+std::string GetLineUp(const size_t y, SearchData& searchData)
 {
 	std::string line;
 	if (y > 0)
@@ -18,7 +18,7 @@ std::string GetLineUp(size_t y, SearchData& searchData)
 	return line;
 }
 
-std::string GetLineCurrent(size_t y, SearchData& searchData)
+std::string GetLineCurrent(const size_t y, SearchData& searchData)
 {
 	std::string line;
 	searchData.inputFile.seekg(searchData.linePositions[y]);
@@ -26,7 +26,7 @@ std::string GetLineCurrent(size_t y, SearchData& searchData)
 	return line;
 }
 
-std::string GetLineDown(size_t y, SearchData& searchData)
+std::string GetLineDown(const size_t y, SearchData& searchData)
 {
 	std::string line;
 	if ((y + 1) < searchData.fileSize)
@@ -46,7 +46,11 @@ std::vector<std::vector<std::shared_ptr<Node>>> GetOpenSet()
 	return openSet;
 }
 
-std::vector<Point> GetNeighbors(std::string& lineUp, std::string& lineCurrent, std::string& lineDown, Point& currentPoint)
+std::vector<Point> GetNeighbors(
+	const std::string& lineUp,
+	const std::string& lineCurrent,
+	const std::string& lineDown,
+	const Point& currentPoint)
 {
 	std::vector<Point> neighbors(4);
 
@@ -67,10 +71,10 @@ std::vector<Point> GetNeighbors(std::string& lineUp, std::string& lineCurrent, s
 
 void UpdateNodeInQueue(
 	std::priority_queue<std::shared_ptr<Node>, std::vector<std::shared_ptr<Node>>, CompareNodes>& queue,
-	std::vector<std::vector<std::shared_ptr<Node>>>& openSet,
-	Point& neighbor,
-	std::shared_ptr<Node>& currentNode,
-	float newBefore
+	const std::vector<std::vector<std::shared_ptr<Node>>>& openSet,
+	const Point& neighbor,
+	const std::shared_ptr<Node>& currentNode,
+	const float newBefore
 )
 {
 	auto queueSize = queue.size();
@@ -93,10 +97,10 @@ void UpdateNodeInQueue(
 void PushNewNode(
 	std::priority_queue<std::shared_ptr<Node>, std::vector<std::shared_ptr<Node>>, CompareNodes>& queue,
 	std::vector<std::vector<std::shared_ptr<Node>>>& openSet,
-	std::shared_ptr<Node>& currentNode,
-	SearchData& searchData,
-	Point& neighbor,
-	float newBefore
+	const std::shared_ptr<Node>& currentNode,
+	const SearchData& searchData,
+	const Point& neighbor,
+	const float newBefore
 )
 {
 	auto newNode = std::make_shared<Node>(neighbor);

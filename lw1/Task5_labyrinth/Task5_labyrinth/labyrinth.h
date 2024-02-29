@@ -2,4 +2,4 @@
 #include <iostream>
 #include <string>
 
-void FindPath(std::string& inputFileName, std::string& outputFileName);
+void FindPath(const std::string& inputFileName, const std::string& outputFileName);
