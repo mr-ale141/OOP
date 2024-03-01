@@ -3,22 +3,16 @@
 #include "../Task3_invert/matrix_3x3.h"
 #include <cmath>
 
-std::vector<std::vector<double>> MultiplyMatrices(
-	const std::vector<std::vector<double>>& m1, 
-	const std::vector<std::vector<double>>& m2
-)
+Matrix MultiplyMatrices(const Matrix& m1, const Matrix& m2)
 {
-	std::vector<std::vector<double>> newM(m1);
+	Matrix newM(m1);
 	for (size_t i = 0; i < m1.size(); i++)
 		for (size_t j = 0; j < m1[0].size(); j++)
 			newM[i][j] = m1[i][0] * m2[0][j] + m1[i][1] * m2[1][j] + m1[i][2] * m2[2][j];
 	return newM;
 }
 
-bool IsEquMatrix(
-	const std::vector<std::vector<double>>& m1,
-	const std::vector<std::vector<double>>& m2
-)
+bool IsEquMatrix(const Matrix& m1, const Matrix& m2)
 {
 	bool answer = true;
 	if ((m1.size() != m2.size()) || (m1[0].size() != m2[0].size()))
@@ -33,7 +27,7 @@ bool IsEquMatrix(
 	return answer;
 }
 
-const std::vector<std::vector<double>> E =
+const Matrix E =
 {
 	{ 1.0,  .0,  .0 },
 	{  .0, 1.0,  .0 },
@@ -42,8 +36,8 @@ const std::vector<std::vector<double>> E =
 
 TEST_CASE("Test Case 'Smoke test'")
 {
-	std::vector<std::vector<double>> mInverse;
-	std::vector<std::vector<double>> m =
+	Matrix mInverse;
+	Matrix m =
 	{
 		{ 1.0, 2.0, 3.0 },
 		{  .0, 1.0, 4.0 },
@@ -63,8 +57,8 @@ TEST_CASE("Test Case 'Smoke test'")
 
 TEST_CASE("Test Case 'Smoke test with negative'")
 {
-	std::vector<std::vector<double>> mInverse;
-	std::vector<std::vector<double>> m =
+	Matrix mInverse;
+	Matrix m =
 	{
 		{ 3.0,  4.0,  8.0 },
 		{ 2.4, -1.0, 11.0 },
@@ -84,8 +78,8 @@ TEST_CASE("Test Case 'Smoke test with negative'")
 
 TEST_CASE("Test Case 'Det == 0'")
 {
-	std::vector<std::vector<double>> mInverse;
-	std::vector<std::vector<double>> m =
+	Matrix mInverse;
+	Matrix m =
 	{
 		{ 1.0,  .0, 1.0 },
 		{  .0, 1.0,  .0 },
@@ -106,8 +100,8 @@ TEST_CASE("Test Case 'Det == 0'")
 
 TEST_CASE("Test Case 'Det == 0 without 0 in matrix'")
 {
-	std::vector<std::vector<double>> mInverse;
-	std::vector<std::vector<double>> m =
+	Matrix mInverse;
+	Matrix m =
 	{
 		{ 3.0,  4.0, -5.0 },
 		{ 8.0,  7.0, -2.0 },

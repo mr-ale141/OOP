@@ -3,7 +3,7 @@
 */
 #include "matrix_3x3.h"
 
-int main(int argc, char* argv[])
+int main(const int argc, const char* argv[])
 {
 	const size_t matrixSize = 3;
 
@@ -16,8 +16,8 @@ int main(int argc, char* argv[])
 	}
 
 	std::string inputFileName(argv[1]);
-	std::vector<std::vector<double>> matrix;
-	std::vector<std::vector<double>> matrixInverse;
+	Matrix matrix;
+	Matrix matrixInverse;
 
 	try
 	{

@@ -5,8 +5,10 @@
 #include <string>
 #include <cmath>
 
-std::vector<std::vector<double>> GetInverse3x3(const std::vector<std::vector<double>>& m);
+using Matrix = std::vector<std::vector<double>>;
 
-void PrintMatrix(const std::vector<std::vector<double>>& m);
+Matrix GetInverse3x3(const Matrix& m);
 
-std::vector<std::vector<double>> GetMatrix(const std::string& inputFileName, const size_t matrixSize);
+void PrintMatrix(const Matrix& m);
+
+Matrix GetMatrix(const std::string& inputFileName, const size_t matrixSize);

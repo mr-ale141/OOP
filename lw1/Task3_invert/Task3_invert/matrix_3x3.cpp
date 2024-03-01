@@ -1,12 +1,12 @@
 #include "matrix_3x3.h"
 
-std::vector<std::vector<double>> GetMatrix(const std::string& inputFileName, const size_t matrixSize)
+Matrix GetMatrix(const std::string& inputFileName, const size_t matrixSize)
 {
 	std::ifstream inputFile(inputFileName);
 	if (!inputFile)
 		throw std::ios_base::failure("Can't open " + inputFileName);
 
-	std::vector<std::vector<double>> matrix(matrixSize, std::vector<double>(matrixSize));
+	Matrix matrix(matrixSize, std::vector<double>(matrixSize));
 
 	for (size_t i = 0; (i < matrixSize) && inputFile; i++)
 	{
@@ -27,7 +27,7 @@ std::vector<std::vector<double>> GetMatrix(const std::string& inputFileName, con
 	return matrix;
 }
 
-void PrintMatrix(const std::vector<std::vector<double>>& m)
+void PrintMatrix(const Matrix& m)
 {
 	const size_t matrixSize = m.size();
 
@@ -54,12 +54,12 @@ void PrintMatrix(const std::vector<std::vector<double>>& m)
 	std::cout << std::defaultfloat;
 }
 
-double GetDet2x2(const std::vector<std::vector<double>>& m)
+double GetDet2x2(const Matrix& m)
 {
 	return m[0][0] * m[1][1] - m[1][0] * m[0][1];
 }
 
-double GetDet3x3(const std::vector<std::vector<double>>& m)
+double GetDet3x3(const Matrix& m)
 {
 	return
 		+ m[0][0] * (GetDet2x2({ { m[1][1], m[1][2] }, { m[2][1], m[2][2] } }))
@@ -67,17 +67,17 @@ double GetDet3x3(const std::vector<std::vector<double>>& m)
 		+ m[0][2] * (GetDet2x2({ { m[1][0], m[1][1] }, { m[2][0], m[2][1] } }));
 }
 
-std::vector<std::vector<double>> GetTransparent(const std::vector<std::vector<double>>& m)
+Matrix GetTransparent(const Matrix& m)
 {
 	size_t mSize = m.size();
-	std::vector<std::vector<double>> mT(m);
+	Matrix mT(m);
 	for (size_t i = 0; i < mSize; i++)
 		for (size_t j = 0; j < mSize; j++)
 			mT[i][j] = m[j][i];
 	return mT;
 }
 
-std::vector<std::vector<double>> GetInverse3x3(const std::vector<std::vector<double>>& m)
+Matrix GetInverse3x3(const Matrix& m)
 {
 	size_t mSize = m.size();
 
