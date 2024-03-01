@@ -54,6 +54,7 @@ void PrintMatrix(const Matrix& m)
 	std::cout << std::defaultfloat;
 }
 
+//array2x2 array3x3
 double GetDet2x2(const Matrix& m)
 {
 	return m[0][0] * m[1][1] - m[1][0] * m[0][1];
@@ -86,12 +87,14 @@ Matrix GetInverse3x3(const Matrix& m)
 
 	double det = GetDet3x3(m);
 
+	//optional
 	if (det <= std::numeric_limits<double>::epsilon())
 		throw std::invalid_argument("The entered matrix has no inverse! (Determinant = 0)");
 
-	std::vector<std::vector<double>> newMatrix(m);
+	Matrix newMatrix(m);
 	const double detInverse = 1 / det;
 
+	//найти название этой операции и вынести в функцию
 	for (size_t i = 0; i < mSize; i++)
 		for (size_t j = 0; j < mSize; j++)
 		{
@@ -111,5 +114,6 @@ Matrix GetInverse3x3(const Matrix& m)
 				detInverse;
 		}
 
+	//transpose
 	return GetTransparent(newMatrix);
 }

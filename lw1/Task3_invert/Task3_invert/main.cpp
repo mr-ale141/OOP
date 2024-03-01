@@ -17,7 +17,7 @@ int main(const int argc, const char* argv[])
 
 	std::string inputFileName(argv[1]);
 	Matrix matrix;
-	Matrix matrixInverse;
+	Matrix matrixInverse;//использовать и объ€вл€ть в одном блоке
 
 	try
 	{

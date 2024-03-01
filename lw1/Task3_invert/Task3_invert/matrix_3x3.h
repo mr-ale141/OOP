@@ -5,6 +5,7 @@
 #include <string>
 #include <cmath>
 
+//array גלוסעמ vector
 using Matrix = std::vector<std::vector<double>>;
 
 Matrix GetInverse3x3(const Matrix& m);
