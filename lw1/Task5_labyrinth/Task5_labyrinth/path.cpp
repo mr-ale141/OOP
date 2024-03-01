@@ -70,7 +70,7 @@ std::vector<Point> GetNeighbors(
 }
 
 void UpdateNodeInQueue(
-	std::priority_queue<std::shared_ptr<Node>, std::vector<std::shared_ptr<Node>>, CompareNodes>& queue,
+	Queue& queue,
 	const std::vector<std::vector<std::shared_ptr<Node>>>& openSet,
 	const Point& neighbor,
 	const std::shared_ptr<Node>& currentNode,
@@ -95,7 +95,7 @@ void UpdateNodeInQueue(
 }
 
 void PushNewNode(
-	std::priority_queue<std::shared_ptr<Node>, std::vector<std::shared_ptr<Node>>, CompareNodes>& queue,
+	Queue& queue,
 	std::vector<std::vector<std::shared_ptr<Node>>>& openSet,
 	const std::shared_ptr<Node>& currentNode,
 	const SearchData& searchData,
@@ -120,7 +120,7 @@ std::shared_ptr<Node> GetPath(SearchData& searchData)
 	std::set<Point> closedSet;
 	auto openSet = GetOpenSet();
 
-	std::priority_queue<std::shared_ptr<Node>, std::vector<std::shared_ptr<Node>>, CompareNodes> queue;
+	Queue queue;
 
 	std::ifstream& file = searchData.inputFile;
 

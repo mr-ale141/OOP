@@ -52,7 +52,7 @@ TEST_CASE("Test Case 'Smoke test'")
 		REQUIRE(1 == 0);
 		return;
 	}
-	REQUIRE(CompareFiles(std::string("out\\smoke.txt"), std::string("compare\\smoke.txt")));
+	REQUIRE(CompareFiles(outputFileName, std::string("compare\\smoke.txt")));
 }
 
 TEST_CASE("Test Case 'Outside path test'")
@@ -68,7 +68,7 @@ TEST_CASE("Test Case 'Outside path test'")
 		REQUIRE(1 == 0);
 		return;
 	}
-	REQUIRE(CompareFiles(std::string("out\\outside_path.txt"), std::string("compare\\outside_path.txt")));
+	REQUIRE(CompareFiles(outputFileName, std::string("compare\\outside_path.txt")));
 }
 
 TEST_CASE("Test Case 'Outside test'")
@@ -84,7 +84,7 @@ TEST_CASE("Test Case 'Outside test'")
 		REQUIRE(1 == 0);
 		return;
 	}
-	REQUIRE(CompareFiles(std::string("out\\outside.txt"), std::string("compare\\outside.txt")));
+	REQUIRE(CompareFiles(outputFileName, std::string("compare\\outside.txt")));
 }
 
 TEST_CASE("Test Case 'Double 'A' test'")

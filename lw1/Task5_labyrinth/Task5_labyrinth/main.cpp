@@ -11,11 +11,10 @@ int main(const int argc, const char* argv[])
 		return 1;
 	}
 
-	std::string inputFileName(argv[1]);
-	std::string outputFileName(argv[2]);
-
 	try
 	{
+		std::string inputFileName(argv[1]);
+		std::string outputFileName(argv[2]);
 		FindPath(inputFileName, outputFileName);
 	}
 	catch (const std::exception& e)

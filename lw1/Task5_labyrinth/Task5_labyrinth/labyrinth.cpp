@@ -70,6 +70,8 @@ void FindPath(const std::string& inputFileName, const std::string& outputFileNam
 	outputFile.close();
 
 	std::fstream file(outputFileName, std::fstream::in | std::fstream::out | std::fstream::binary);
+	if (!file)
+		throw std::ios_base::failure("ERROR! Can't open " + outputFileName);
 
 	char ch = '.';
 

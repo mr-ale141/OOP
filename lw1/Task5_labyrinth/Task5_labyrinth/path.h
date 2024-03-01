@@ -97,4 +97,6 @@ struct CompareNodes {
 	}
 };
 
+using Queue = std::priority_queue<std::shared_ptr<Node>, std::vector<std::shared_ptr<Node>>, CompareNodes>;
+
 std::shared_ptr<Node> GetPath(SearchData& searchData);
