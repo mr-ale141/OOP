@@ -1,5 +1,6 @@
 #include "labyrinth.h"
 #include "path.h"
+#include <exception>
 
 SearchData FindPoints(const std::string& inputFileName)
 {
@@ -54,6 +55,28 @@ SearchData FindPoints(const std::string& inputFileName)
 	return searchData;
 }
 
+Point GetParentPoint(const Node& node)
+{
+	switch (node.directionForThis)
+	{
+	case UP:
+		return Point({ node.point.x, node.point.y + 1 });
+		break;
+	case RIGHT:
+		return Point({ node.point.x - 1, node.point.y });
+		break;
+	case DOWN:
+		return Point({ node.point.x, node.point.y - 1 });
+		break;
+	case LEFT:
+		return Point({ node.point.x + 1, node.point.y });
+		break;
+	default:
+		throw std::invalid_argument("Not correct direction");
+		break;
+	}
+}
+
 void FindPath(const std::string& inputFileName, const std::string& outputFileName)
 {
 
@@ -75,14 +98,22 @@ void FindPath(const std::string& inputFileName, const std::string& outputFileNam
 
 	char ch = '.';
 
-	while (currentNode)
+	while (currentNode.directionForThis != UNKNOWN)
 	{
-		std::streampos pos = searchData.linePositions[currentNode->point.y] + (std::streamoff)currentNode->point.x;
+		Point point = currentNode.point;
+		Point parentPoint = GetParentPoint(currentNode);
+		if (point == searchData.A || point == searchData.B)
+		{
+			currentNode = searchData.openSet[parentPoint.y][parentPoint.x];
+			continue;
+		}
+		std::streampos pos = searchData.linePositions[point.y] + (std::streamoff)point.x;
 		file.seekp(pos);
-		if (currentNode->parent != nullptr)
-			file.write((char *)&ch, sizeof(char));
-		currentNode = currentNode->parent;
+		file.write((char *)&ch, sizeof(char));
+		currentNode = searchData.openSet[parentPoint.y][parentPoint.x];
 	}
+
+
 
 	if (!file.flush())
 		throw std::ios_base::failure("ERROR! Can't write in output file");

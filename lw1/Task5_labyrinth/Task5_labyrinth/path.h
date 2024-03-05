@@ -1,27 +1,39 @@
 #pragma once
 #include <queue>
 #include <set>
-#include <memory>
 #include <fstream>
+#include <memory>
 #include <iostream>
 #include <string>
 #include <cmath>
 #include <vector>
 
 static const size_t maxSize = 100;
+static const int countSides = 4;
 
 enum Direction
 {
 	UP,
 	RIGHT,
 	DOWN,
-	LEFT
+	LEFT,
+	UNKNOWN,
 };
 
 struct Point
 {
-	size_t x = maxSize;
-	size_t y = maxSize;
+	size_t x;
+	size_t y;
+	explicit Point()
+	{
+		x = maxSize;
+		y = maxSize;
+	}
+	explicit Point(std::initializer_list<size_t> args)
+	{
+		x = args.begin()[0];
+		y = args.begin()[1];
+	}
 	Point& operator=(std::initializer_list<size_t> args)
 	{
 		x = args.begin()[0];
@@ -57,25 +69,25 @@ struct Point
 	}
 };
 
-struct SearchData
-{
-	std::streampos linePositions[maxSize];
-	Point A;
-	Point B;
-	std::ifstream inputFile;
-	size_t fileSize;
-};
-
 class Node
 {
 public:
+	Node()
+	{
+		point = { maxSize, maxSize };
+		before = 0.f;
+		after = 0.f;
+		sum = 0.f;
+		directionForThis = UNKNOWN;
+		isInQueue = false;
+	}
 	explicit Node(const Point newPoint)
 	{
 		point = newPoint;
 		before = 0.f;
 		after = 0.f;
 		sum = 0.f;
-		parent = nullptr;
+		directionForThis = UNKNOWN;
 		isInQueue = false;
 	}
 	void updateSum()
@@ -87,16 +99,39 @@ public:
 	float after;
 	float sum;
 	bool isInQueue;
-	std::shared_ptr<Node> parent;
+	Direction directionForThis;
+	bool operator<(const Node& n) const
+	{
+		return sum > n.sum;
+	}
+	Node& operator=(const Node& n)
+	{
+		point = n.point;
+		before = n.before;
+		after = n.after;
+		sum = n.sum;
+		isInQueue = n.isInQueue;
+		directionForThis = n.directionForThis;
+		return *this;
+	}
 };
 
 struct CompareNodes {
-	bool operator()(const std::shared_ptr<Node>& left, const std::shared_ptr<Node>& right)
+	bool operator()(const Node* left, const Node* right)
 	{
 		return left->sum > right->sum;
 	}
 };
 
-using Queue = std::priority_queue<std::shared_ptr<Node>, std::vector<std::shared_ptr<Node>>, CompareNodes>;
+struct SearchData
+{
+	std::streampos linePositions[maxSize];
+	Point A;
+	Point B;
+	std::ifstream inputFile;
+	size_t fileSize;
+	std::vector<std::vector<Node>> openSet;
+	std::priority_queue<Node*, std::vector<Node*>, CompareNodes> queue;
+};
 
-std::shared_ptr<Node> GetPath(SearchData& searchData);
+Node GetPath(SearchData& searchData);
