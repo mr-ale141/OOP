@@ -1,9 +1,5 @@
 #pragma once
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <cstdint>
-#include <exception>
+// убрать инклюды из заголовка
 
 void Сryptographer(
 	const std::string& mode, 

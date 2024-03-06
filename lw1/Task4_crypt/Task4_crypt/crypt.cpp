@@ -1,13 +1,18 @@
+#include <fstream>
+#include <cstdint>
+#include <string>
+#include <exception>
 #include "crypt.h"
 
 static const uint8_t keyMin = 0;
 static const uint8_t keyMax = 255;
 static const uint8_t indexesMix[8] = { 2, 3, 4, 6, 7, 0, 1, 5 };
 
-enum Mode
+// кричащий стиль
+enum class Mode
 {
-	crypt,
-	decrypt,
+	CRYPT,
+	DECRYPT,
 };
 
 struct CryptData
@@ -25,36 +30,51 @@ CryptData GetCryptData(
 	const std::string& key
 )
 {
+	// не убирать фигурные скобки
 	CryptData cryptData;
 
 	if (mode == "crypt")
-		cryptData.mode = crypt;
+	{
+		cryptData.mode = Mode::CRYPT;
+	}
 	else if (mode == "decrypt")
-		cryptData.mode = decrypt;
+	{
+		cryptData.mode = Mode::DECRYPT;
+	}
 	else
+	{
 		throw std::invalid_argument("ERROR! Parameter 'mode' is not <crypt | decrypt>");
+	}
 
 	cryptData.inputFile.open(inputFileName, std::ios::binary);
-	if (!cryptData.inputFile)
+	if (!cryptData.inputFile.is_open())
+	{
 		throw std::ios_base::failure("ERROR! Can't open " + inputFileName);
+	}
 
 	cryptData.outputFile.open(outputFileName, std::ios::binary | std::fstream::trunc);
-	if (!cryptData.outputFile)
+	if (!cryptData.outputFile.is_open())
+	{
 		throw std::ios_base::failure("ERROR! Can't open " + outputFileName);
+	}
 
 	int keyInt = std::stoi(key);
 
 	if (keyInt < keyMin || keyInt > keyMax)
+	{
 		throw std::invalid_argument("ERROR! Parameter 'key' is not between 0 .. 255");
+	}
 
 	cryptData.key = (uint8_t)keyInt;
 
 	return cryptData;
 }
 
-void Crypt(std::ifstream& fileIn, std::ofstream& fileOut, char key)
+void Crypt(std::istream& inStream, std::ostream& outStream, char key)
 {
-	for (char byte = 0; fileIn.get(byte);)
+	// использовать для лучшей читабельности while
+	char byte = 0;
+	while (inStream.get(byte))
 	{
 		char mixByte{};
 		byte ^= key;
@@ -64,13 +84,15 @@ void Crypt(std::ifstream& fileIn, std::ofstream& fileOut, char key)
 			bit = bit << indexesMix[i];
 			mixByte |= bit;
 		}
-		fileOut.put(mixByte);
+		outStream.put(mixByte);
 	}
 }
 
-void Decrypt(std::ifstream& fileIn, std::ofstream& fileOut, char key)
+void Decrypt(std::istream& inStream, std::ostream& outStream, char key)
 {
-	for (char mixByte = 0; fileIn.get(mixByte);)
+	// использовать для лучшей читабельности while
+	char mixByte = 0;
+	while (inStream.get(mixByte))
 	{
 		char byte{};
 		for (char i = 0; i < sizeof(indexesMix); i++)
@@ -80,7 +102,7 @@ void Decrypt(std::ifstream& fileIn, std::ofstream& fileOut, char key)
 			byte |= bit;
 		}
 		byte ^= key;
-		fileOut.put(byte);
+		outStream.put(byte);
 	}
 }
 
@@ -92,20 +114,20 @@ void Сryptographer(
 {
 	CryptData cryptData = GetCryptData(mode, inputFileName, outputFileName, key);
 
-	cryptData.inputFile.seekg(0, std::ios_base::beg);
-
 	switch (cryptData.mode)
 	{
-	case crypt:
+	case Mode::CRYPT:
 		Crypt(cryptData.inputFile, cryptData.outputFile, cryptData.key);
 		break;
-	case decrypt:
+	case Mode::DECRYPT:
 		Decrypt(cryptData.inputFile, cryptData.outputFile, cryptData.key);
 		break;
 	}
 
 	if (!cryptData.outputFile.flush())
+	{
 		throw std::ios_base::failure("ERROR! Can't write in output file");
+	}
 
 	cryptData.inputFile.close();
 	cryptData.outputFile.close();

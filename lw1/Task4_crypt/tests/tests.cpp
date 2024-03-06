@@ -24,6 +24,50 @@ bool CompareFiles(std::string& fileName1, std::string& fileName2)
 		return false;
 }
 
+TEST_CASE("Test Case 'War and world'")
+{
+	std::string mode = "crypt";
+	std::string inputFileName = "waw.txt";
+	std::string outputFileCrypt = "waw_crypt.txt";
+	std::string outputFileDecrypt = "waw_decrypt.txt";
+	std::string key = "255";
+	try
+	{
+		Сryptographer(mode, inputFileName, outputFileCrypt, key);
+		REQUIRE(!CompareFiles(inputFileName, outputFileCrypt));
+		mode = "decrypt";
+		Сryptographer(mode, outputFileCrypt, outputFileDecrypt, key);
+		REQUIRE(CompareFiles(inputFileName, outputFileDecrypt));
+	}
+	catch (...)
+	{
+		REQUIRE(1 == 0);
+		return;
+	}
+}
+
+TEST_CASE("Test Case 'Empty file'")
+{
+	std::string mode = "crypt";
+	std::string inputFileName = "empty.txt";
+	std::string outputFileCrypt = "empty_crypt.txt";
+	std::string outputFileDecrypt = "empty_decrypt.txt";
+	std::string key = "1";
+	try
+	{
+		Сryptographer(mode, inputFileName, outputFileCrypt, key);
+		REQUIRE(CompareFiles(inputFileName, outputFileCrypt));
+		mode = "decrypt";
+		Сryptographer(mode, outputFileCrypt, outputFileDecrypt, key);
+		REQUIRE(CompareFiles(inputFileName, outputFileDecrypt));
+	}
+	catch (...)
+	{
+		REQUIRE(1 == 0);
+		return;
+	}
+}
+
 TEST_CASE("Test Case 'Init Crypt data empty string'")
 {
 	std::string mode("");
@@ -154,13 +198,13 @@ TEST_CASE("Test Case 'Crypt / Decrypt smoke test'")
 	}
 }
 
-TEST_CASE("Test Case 'War and world'")
+TEST_CASE("Test Case 'EXE file'")
 {
 	std::string mode = "crypt";
-	std::string inputFileName = "waw.txt";
-	std::string outputFileCrypt = "waw_crypt.txt";
-	std::string outputFileDecrypt = "waw_decrypt.txt";
-	std::string key = "255";
+	std::string inputFileName = "hello.txt";
+	std::string outputFileCrypt = "hello_crypt.txt";
+	std::string outputFileDecrypt = "hello_decrypt.txt";
+	std::string key = "128";
 	try
 	{
 		Сryptographer(mode, inputFileName, outputFileCrypt, key);
