@@ -11,6 +11,7 @@
 static const size_t maxSize = 100;
 static const int countSides = 4;
 
+// enum class
 enum Direction
 {
 	UP,
@@ -29,11 +30,13 @@ struct Point
 		x = maxSize;
 		y = maxSize;
 	}
+	//inicial list не подходит
 	explicit Point(std::initializer_list<size_t> args)
 	{
 		x = args.begin()[0];
 		y = args.begin()[1];
 	}
+	//убрать
 	Point& operator=(std::initializer_list<size_t> args)
 	{
 		x = args.begin()[0];
@@ -95,15 +98,17 @@ public:
 		sum = before + after;
 	}
 	Point point;
-	float before;
+	float before = 0.0f;
 	float after;
 	float sum;
 	bool isInQueue;
 	Direction directionForThis;
+	//обрать лич
 	bool operator<(const Node& n) const
 	{
 		return sum > n.sum;
 	}
+ // умеет сам
 	Node& operator=(const Node& n)
 	{
 		point = n.point;
@@ -125,12 +130,15 @@ struct CompareNodes {
 
 struct SearchData
 {
+// 
 	std::streampos linePositions[maxSize];
 	Point A;
 	Point B;
-	std::ifstream inputFile;
+	std::ifstream inputFile;//лишнее необходимо отвязаться от файла
 	size_t fileSize;
+// одномерный массив с расчетом индекса
 	std::vector<std::vector<Node>> openSet;
+// зарание выделить память
 	std::priority_queue<Node*, std::vector<Node*>, CompareNodes> queue;
 };
 

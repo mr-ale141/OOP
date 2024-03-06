@@ -2,6 +2,7 @@
 #include "path.h"
 #include <exception>
 
+// считывать сразу в опенсет
 SearchData FindPoints(const std::string& inputFileName)
 {
 	SearchData searchData{};
@@ -61,10 +62,9 @@ Point GetParentPoint(const Node& node)
 	{
 	case UP:
 		return Point({ node.point.x, node.point.y + 1 });
-		break;
 	case RIGHT:
 		return Point({ node.point.x - 1, node.point.y });
-		break;
+		break;// лишнее ретурн
 	case DOWN:
 		return Point({ node.point.x, node.point.y - 1 });
 		break;
