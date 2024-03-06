@@ -1,12 +1,14 @@
 #include "matrix_3x3.h"
 
-Matrix GetMatrix(const std::string& inputFileName, const size_t matrixSize)
+const size_t matrixSize = 3;
+
+Matrix3x3 GetMatrix3x3(const std::string& inputFileName)
 {
 	std::ifstream inputFile(inputFileName);
 	if (!inputFile)
 		throw std::ios_base::failure("Can't open " + inputFileName);
 
-	Matrix matrix(matrixSize, std::vector<double>(matrixSize));
+	Matrix3x3 matrix;
 
 	for (size_t i = 0; (i < matrixSize) && inputFile; i++)
 	{
@@ -27,7 +29,7 @@ Matrix GetMatrix(const std::string& inputFileName, const size_t matrixSize)
 	return matrix;
 }
 
-void PrintMatrix(const Matrix& m)
+void PrintMatrix3x3(const Matrix3x3& m)
 {
 	const size_t matrixSize = m.size();
 
@@ -55,12 +57,12 @@ void PrintMatrix(const Matrix& m)
 }
 
 //array2x2 array3x3
-double GetDet2x2(const Matrix& m)
+double GetDet2x2(const Matrix2x2& m)
 {
 	return m[0][0] * m[1][1] - m[1][0] * m[0][1];
 }
 
-double GetDet3x3(const Matrix& m)
+double GetDet3x3(const Matrix3x3& m)
 {
 	return
 		+ m[0][0] * (GetDet2x2({ { m[1][1], m[1][2] }, { m[2][1], m[2][2] } }))
@@ -68,52 +70,53 @@ double GetDet3x3(const Matrix& m)
 		+ m[0][2] * (GetDet2x2({ { m[1][0], m[1][1] }, { m[2][0], m[2][1] } }));
 }
 
-Matrix GetTransparent(const Matrix& m)
+Matrix3x3 GetTranspose3x3(const Matrix3x3& m)
 {
 	size_t mSize = m.size();
-	Matrix mT(m);
+	Matrix3x3 mT(m);
 	for (size_t i = 0; i < mSize; i++)
 		for (size_t j = 0; j < mSize; j++)
 			mT[i][j] = m[j][i];
 	return mT;
 }
 
-Matrix GetInverse3x3(const Matrix& m)
+Matrix3x3 GetСomplement(const Matrix3x3& m)
 {
-	size_t mSize = m.size();
-
-	if (mSize != 3 || mSize != m[0].size())
-		throw std::invalid_argument("ERROR! Matrix is not 3x3!");
-
 	double det = GetDet3x3(m);
 
-	//optional
 	if (det <= std::numeric_limits<double>::epsilon())
 		throw std::invalid_argument("The entered matrix has no inverse! (Determinant = 0)");
 
-	Matrix newMatrix(m);
 	const double detInverse = 1 / det;
 
-	//найти название этой операции и вынести в функцию
-	for (size_t i = 0; i < mSize; i++)
-		for (size_t j = 0; j < mSize; j++)
+	Matrix3x3 newMatrix(m);
+	for (size_t i = 0; i < matrixSize; i++)
+		for (size_t j = 0; j < matrixSize; j++)
 		{
-			size_t m2x2_i0 = (i % 2) ? (i + 2) % mSize : (i + 1) % mSize;
-			size_t m2x2_i1 = (i % 2) ? (i + 1) % mSize : (i + 2) % mSize;
-			size_t m2x2_j0 = (j % 2) ? (j + 2) % mSize : (j + 1) % mSize;
-			size_t m2x2_j1 = (j % 2) ? (j + 1) % mSize : (j + 2) % mSize;
+			size_t m2x2_i0 = (i % 2) ? (i + 2) % matrixSize : (i + 1) % matrixSize;
+			size_t m2x2_i1 = (i % 2) ? (i + 1) % matrixSize : (i + 2) % matrixSize;
+			size_t m2x2_j0 = (j % 2) ? (j + 2) % matrixSize : (j + 1) % matrixSize;
+			size_t m2x2_j1 = (j % 2) ? (j + 1) % matrixSize : (j + 2) % matrixSize;
 
 			newMatrix[i][j] =
 				std::pow(-1, i + j) *
 				GetDet2x2(
-					{
-						{ m[m2x2_i0][m2x2_j0], m[m2x2_i0][m2x2_j1] },
-						{ m[m2x2_i1][m2x2_j0], m[m2x2_i1][m2x2_j1] },
-					}
-				) *
+			{
+				{ m[m2x2_i0][m2x2_j0], m[m2x2_i0][m2x2_j1] },
+				{ m[m2x2_i1][m2x2_j0], m[m2x2_i1][m2x2_j1] },
+			}
+			) *
 				detInverse;
 		}
+	return newMatrix;
+}
 
-	//transpose
-	return GetTransparent(newMatrix);
+Matrix3x3 GetInverse3x3(const Matrix3x3& m)
+{
+	if (matrixSize != 3 || matrixSize != m[0].size())
+		throw std::invalid_argument("ERROR! Matrix is not 3x3!");
+
+	Matrix3x3 complement = GetСomplement(m);
+
+	return GetTranspose3x3(complement);
 }

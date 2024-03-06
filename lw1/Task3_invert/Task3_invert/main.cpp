@@ -5,8 +5,6 @@
 
 int main(const int argc, const char* argv[])
 {
-	const size_t matrixSize = 3;
-
 	if (argc != 2)
 	{
 		std::cout << "Error! There are no required parameters!" << std::endl;
@@ -16,21 +14,20 @@ int main(const int argc, const char* argv[])
 	}
 
 	std::string inputFileName(argv[1]);
-	Matrix matrix;
-	Matrix matrixInverse;//использовать и объ€вл€ть в одном блоке
 
 	try
 	{
-		matrix = GetMatrix(inputFileName, matrixSize);
+		Matrix3x3 matrix;
+		Matrix3x3 matrixInverse;
+		matrix = GetMatrix3x3(inputFileName);
 		matrixInverse = GetInverse3x3(matrix);
+		PrintMatrix3x3(matrixInverse);
 	}
 	catch (const std::exception& e)
 	{
 		std::cout << e.what() << std::endl;
 		return 1;
 	}
-
-	PrintMatrix(matrixInverse);
 
 	return 0;
 }
