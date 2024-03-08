@@ -5,14 +5,18 @@
 
 std::vector<double> GetVectorDouble(std::istream& input)
 {
-	double d;
+	double d{};
 	std::vector<double> v;
 	while (input.peek() != '\n')
 	{
 		input >> d;
-		if (input.fail())
+		if (input.fail() && !input.eof())
 		{
 			throw std::invalid_argument("ERROR! Invalid input data!");
+		}
+		else if (input.eof())
+		{
+			return v;
 		}
 		else
 		{

@@ -10,9 +10,13 @@ int main(const int argc, const char* argv[])
 	try
 	{
 		auto vector = GetVectorDouble(std::cin);
-		MultipliedByMin(vector);
-		std::sort(vector.begin(), vector.end());
-		WriteVectorDouble(std::cout, vector);
+		while (!std::cin.eof())
+		{
+			MultipliedByMin(vector);
+			std::sort(vector.begin(), vector.end());
+			WriteVectorDouble(std::cout, vector);
+			vector = GetVectorDouble(std::cin);
+		}
 	}
 	catch (const std::exception& e)
 	{
