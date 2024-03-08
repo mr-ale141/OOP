@@ -157,3 +157,36 @@ TEST_CASE("Test Case 'Without token'")
 		return;
 	}
 }
+
+TEST_CASE("Test Case 'Multiple strings'")
+{
+	auto inputFileName = std::string("in\\multiple.txt");
+	auto outputFileName = std::string("out\\multiple.txt");
+	auto compareFileName = std::string("compare\\multiple.txt");
+	try
+	{
+		std::ifstream input(inputFileName);
+		std::ofstream output(outputFileName);
+		if (!input.is_open() || !output.is_open())
+			throw std::ios_base::failure("ERROR! Can't open file for compare!");
+
+		std::string str;
+		std::getline(input, str);
+		output << HtmlDecode(str) << std::endl;
+
+		if (!output.flush())
+		{
+			throw std::ios_base::failure("ERROR! Can't write in output file");
+		}
+
+		input.close();
+		output.close();
+
+		REQUIRE(CompareFiles(outputFileName, compareFileName));
+	}
+	catch (...)
+	{
+		REQUIRE(1 == 0);
+		return;
+	}
+}
