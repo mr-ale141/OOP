@@ -1,6 +1,7 @@
 #include <iostream>
 #include <exception>
 #include <vector>
+#include <algorithm>
 #include "iovector.h"
 #include "vector_multiplier.h"
 
@@ -10,6 +11,7 @@ int main(const int argc, const char* argv[])
 	{
 		auto vector = GetVectorDouble(std::cin);
 		MultipliedByMin(vector);
+		std::sort(vector.begin(), vector.end());
 		WriteVectorDouble(std::cout, vector);
 	}
 	catch (const std::exception& e)
