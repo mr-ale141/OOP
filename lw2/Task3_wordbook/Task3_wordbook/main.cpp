@@ -1,29 +1,5 @@
-#include <iostream>
-#include <string>
-#include <map>
 #include "wordbook.h"
-
-bool PrintWords(const Book& book, const std::string& keyString)
-{
-	auto key = GetKey(keyString);
-	size_t size = book.count(key);
-	if (size == 0)
-	{
-		return false;
-	}
-	auto range = book.equal_range(key);
-	for (auto i = range.first; i != range.second; ++i)
-	{
-		std::cout << i->second;
-		--size;
-		if (size != 0)
-		{
-			std::cout << ", ";
-		}
-	}
-	std::cout << std::endl;
-	return true;
-}
+#include "ui.h"
 
 int main(const int argc, const char* argv[])
 {
@@ -34,15 +10,58 @@ int main(const int argc, const char* argv[])
 		std::cout << "-> bookword.exe <file_name>" << std::endl;
 		return 1;
 	}
+
 	std::string fileName(argv[1]);
 
 	auto book = GetWordBook(fileName);
+	if (!book.isValid)
+	{
+		std::cout << book.msg << std::endl;
+		return 1;
+	}
 
-	PrintWords(book.enToRu, "HeLlo");
-	PrintWords(book.enToRu, "CAT");
-	PrintWords(book.enToRu, "I go sleep");
-	PrintWords(book.ruToEn, "прИвЕт");
-	PrintWords(book.ruToEn, "Я иду спать");
+	std::string exitString = "...";
+	PrintUi(exitString);
+	std::string answer;
+	while (std::getline(std::cin, answer))
+	{
+		if (answer == exitString)
+		{
+			break;
+		}
+		if (!PrintWords(book, answer))
+		{
+			std::string value = GetTranslate(answer);
+			if (value != "")
+			{
+				AddNewWord(book, answer, value);
+				if (!book.isValid)
+				{
+					std::cout << book.msg << std::endl;
+					PrintUi(exitString);
+					continue;
+				}
+				std::cout << "Word '" << answer << "' ";
+				std::cout << "saved as '" << value << "'." << std::endl;
+			}
+		}
+		PrintUi(exitString);
+	}
 
+	if (book.newEnKeys.size() != 0)
+	{
+		if (ThrowQuestion("Save new words?"))
+		{
+			SaveWordBook(book);
+			if (!book.isValid)
+			{
+				std::cout << book.msg << std::endl;
+				return 1;
+			}
+			std::cout << "Book saved. ";
+		}
+	}
+
+	std::cout << "Bye!" << std::endl;
 	return 0;
 }

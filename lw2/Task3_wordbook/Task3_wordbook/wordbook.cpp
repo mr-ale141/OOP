@@ -1,9 +1,6 @@
 #include <fstream>
-#include <iostream>
 #include <algorithm>
-#include <string>
 #include <cctype>
-#include <map>
 #include "wordbook.h"
 
 static std::fstream file;
@@ -32,7 +29,7 @@ static const std::map<uint16_t, uint16_t> ruChars =
 	{ std::make_pair((uint16_t)'Т', (uint16_t)'т') },
 	{ std::make_pair((uint16_t)'У', (uint16_t)'у') },
 	{ std::make_pair((uint16_t)'Ф', (uint16_t)'ф') },
-	{ std::make_pair((uint16_t)'Ч', (uint16_t)'х') },
+	{ std::make_pair((uint16_t)'Х', (uint16_t)'х') },
 	{ std::make_pair((uint16_t)'Ц', (uint16_t)'ц') },
 	{ std::make_pair((uint16_t)'Ч', (uint16_t)'ч') },
 	{ std::make_pair((uint16_t)'Ъ', (uint16_t)'ъ') },
@@ -127,6 +124,39 @@ std::string GetKey(const std::string& str)
 	return key;
 }
 
+std::string AddWord(BookOptional& book, const std::string& key, const std::string& value)
+{
+	std::string en;
+	std::string ru;
+
+	if (key.size() == 0 || value.size() == 0)
+	{
+		return en;
+	}
+	
+	if (IsAsciiString(key))
+	{
+		en = key;
+		ru = value;
+	}
+	else
+	{
+		en = value;
+		ru = key;
+	}
+	book.enToRu.insert(std::make_pair(GetKey(en), ru));
+	book.ruToEn.insert(std::make_pair(GetKey(ru), en));
+
+	return GetKey(en);
+}
+
+void AddNewWord(BookOptional& book, const std::string& key, const std::string& value)
+{
+	auto newKey = AddWord(book, key, value);
+
+	book.newEnKeys.insert(newKey);
+}
+
 BookOptional ReadWordBook(const std::string& fileName)
 {
 	BookOptional book;
@@ -135,36 +165,37 @@ BookOptional ReadWordBook(const std::string& fileName)
 	invalidBook.isValid = false;
 	invalidBook.msg = std::string("ERROR! Incorrect format in '" + fileName + "'");
 
-	std::string en;
-	std::string ru;
-	
-	std::getline(file, en);
+	std::string word1;
+	std::string word2;
+
+	bool isOk = false;
+
+	std::getline(file, word1);
+	std::getline(file, word2);
 	while (!file.eof())
 	{
-		if (!IsAsciiString(en))
-		{
-			invalidBook.msg = std::string("ERROR! '" + en + "' is not English!");
-			return invalidBook;
-		}
-		std::getline(file, ru);
-		if (file.eof())
-		{
-			return invalidBook;
-		}
-		book.enToRu.insert(std::make_pair(GetKey(en), ru));
-		book.ruToEn.insert(std::make_pair(GetKey(ru), en));
-		std::getline(file, en);
+		isOk = AddWord(book, word1, word2).size() != 0;
+
+		std::getline(file, word1);
+		std::getline(file, word2);
+	}
+
+	file.clear();
+
+	if (!isOk)
+	{
+		book = invalidBook;
 	}
 	return book;
 }
 
 BookOptional GetWordBook(const std::string& fileName)
 {
-	file.open(fileName, std::fstream::in | std::fstream::out);
+	file.open(fileName, std::fstream::in | std::fstream::out | std::fstream::app);
 	if (!file.is_open())
 	{
 		file.close();
-		file.open(fileName, std::fstream::in | std::fstream::out | std::fstream::trunc);
+		file.open(fileName, std::fstream::in | std::fstream::out | std::fstream::app | std::fstream::trunc);
 		if (!file.is_open())
 		{
 			BookOptional invalidBook;
@@ -176,7 +207,47 @@ BookOptional GetWordBook(const std::string& fileName)
 	return ReadWordBook(fileName);
 }
 
-void UpdateWordBook(std::ofstream& output, const BookOptional& book)
+bool PrintWords(const BookOptional& book, const std::string& keyString)
 {
+	auto key = GetKey(keyString);
+	const Book& b = (IsAsciiString(key)) ? book.enToRu : book.ruToEn;
+	size_t size = b.count(key);
+	if (size == 0)
+	{
+		return false;
+	}
+	auto range = b.equal_range(key);
+	for (auto i = range.first; i != range.second; ++i)
+	{
+		std::cout << i->second;
+		--size;
+		if (size != 0)
+		{
+			std::cout << ", ";
+		}
+	}
+	std::cout << std::endl;
+	return true;
+}
 
+void SaveWordBook(BookOptional& book)
+{
+	for (auto en : book.newEnKeys)
+	{
+		std::cout << "eh: " << en << std::endl;
+		std::cout << "is open: " << file.is_open() << std::endl;
+		auto range = book.enToRu.equal_range(en);
+		for (auto i = range.first; i != range.second; ++i)
+		{
+			file << i->first << std::endl;
+			file << i->second << std::endl;
+			std::cout << "fail bit: " << file.fail() << std::endl;
+		}
+	}
+
+	if (!file.flush())
+	{
+		book.isValid = false;
+		book.msg = "Can't write in file";
+	}
 }

@@ -147,9 +147,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="ui.cpp" />
     <ClCompile Include="wordbook.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ui.h" />
     <ClInclude Include="wordbook.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

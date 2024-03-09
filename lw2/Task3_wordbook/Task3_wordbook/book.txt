@@ -6,3 +6,5 @@ cat
 кошка
 I go sleep
 Я иду спать
+exit
+выход
