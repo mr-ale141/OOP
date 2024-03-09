@@ -234,14 +234,13 @@ void SaveWordBook(BookOptional& book)
 {
 	for (auto en : book.newEnKeys)
 	{
-		std::cout << "eh: " << en << std::endl;
-		std::cout << "is open: " << file.is_open() << std::endl;
 		auto range = book.enToRu.equal_range(en);
 		for (auto i = range.first; i != range.second; ++i)
 		{
-			file << i->first << std::endl;
+			std::string notKeyEn = book.ruToEn.find(GetKey(i->second))->second;
+
+			file << notKeyEn << std::endl;
 			file << i->second << std::endl;
-			std::cout << "fail bit: " << file.fail() << std::endl;
 		}
 	}
 

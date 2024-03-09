@@ -8,7 +8,7 @@ void PrintUi(const std::string& exitString)
 
 bool ThrowQuestion(const std::string& question)
 {
-	std::cout << question <<  " [Press 'Y' or 'y' to yes]:" << std::endl;
+	std::cout << question <<  " [Press 'Y' or 'y' to yes]:" << std::endl << ">";
 	std::string answer;
 	std::getline(std::cin, answer);
 	if (answer == "Y" || answer == "y")
