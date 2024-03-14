@@ -168,7 +168,7 @@ BookOptional ReadWordBook(const std::string& fileName)
 	std::string word1;
 	std::string word2;
 
-	bool isOk = false;
+	bool isOk = true;
 
 	std::getline(file, word1);
 	std::getline(file, word2);
