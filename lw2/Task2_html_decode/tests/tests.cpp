@@ -23,6 +23,10 @@ bool CompareFiles(std::string& fileName1, std::string& fileName2)
 		return false;
 }
 
+// вынести в функции
+// стринг стрим 
+// описание теста уникальное
+// &amp;lt;
 TEST_CASE("Test Case 'Smoke test'")
 {
 	auto inputFileName = std::string("in\\smoke.txt");

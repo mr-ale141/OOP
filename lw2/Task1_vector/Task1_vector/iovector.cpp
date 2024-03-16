@@ -7,6 +7,16 @@ std::vector<double> GetVectorDouble(std::istream& input)
 {
 	double d{};
 	std::vector<double> v;
+	/*
+	while (input >> d)
+	{
+		v.push_back(d);
+	}
+	if (!input.eof())
+	{
+		throw std::invalid_argument("ERROR! Invalid input data!");
+	}
+	*/
 	while (input.peek() != '\n')
 	{
 		input >> d;
@@ -27,6 +37,7 @@ std::vector<double> GetVectorDouble(std::istream& input)
 	return v;
 }
 
+//не использовать однобуквенные названия
 void WriteVectorDouble(std::ostream& output, const std::vector<double>& v)
 {
 	auto size = v.size();
@@ -36,6 +47,7 @@ void WriteVectorDouble(std::ostream& output, const std::vector<double>& v)
 	const auto precisionOld = output.precision();
 
 	output.precision(2);
+	//reange base loop
 
 	for (size_t i = 0; i < size; i++)
 	{

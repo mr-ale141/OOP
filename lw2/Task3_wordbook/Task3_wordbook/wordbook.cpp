@@ -62,6 +62,8 @@ bool IsAsciiString(const std::string& str)
 	return true;
 }
 
+// MultiByteToWideChar()
+// покрыть тестами 
 std::string ToLowerRuUtf8(const std::string& str)
 {
 	std::string key;

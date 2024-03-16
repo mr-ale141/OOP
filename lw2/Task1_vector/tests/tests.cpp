@@ -3,7 +3,6 @@
 #include "iovector.h"
 #include "vector_multiplier.h"
 
-
 bool CompareFiles(std::string& fileName1, std::string& fileName2)
 {
 	std::ifstream f1(fileName1);

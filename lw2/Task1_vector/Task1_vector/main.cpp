@@ -1,3 +1,6 @@
+/*
+Каждый элемент массива должен быть умножен на минимальный элемент исходного массива
+*/
 #include <iostream>
 #include <exception>
 #include <vector>
@@ -5,15 +8,20 @@
 #include "iovector.h"
 #include "vector_multiplier.h"
 
-int main(const int argc, const char* argv[])
+//vector func
+int main()
 {
 	try
 	{
+		// readVector Double в названии не использовать
 		auto vector = GetVectorDouble(std::cin);
+		// line добавить
+		// peek() не нужен
 		while (!std::cin.eof())
 		{
 			MultipliedByMin(vector);
 			std::sort(vector.begin(), vector.end());
+			// аналогично Read
 			WriteVectorDouble(std::cout, vector);
 			vector = GetVectorDouble(std::cin);
 		}

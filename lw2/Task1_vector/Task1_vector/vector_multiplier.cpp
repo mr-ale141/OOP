@@ -9,6 +9,7 @@ void MultipliedByMin(std::vector<double>& v)
 		return;
 	}
 	auto minItem = *std::min_element(v.begin(), v.end());
+	// range base loop
 	for (auto iter = v.begin(); iter != v.end(); iter++)
 	{
 		*iter *= minItem;

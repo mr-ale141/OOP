@@ -4,7 +4,7 @@
 #include <map>
 #include "html_decode.h"
 
-#define USE_REPLACE_STRING 0
+#define USE_REPLACE_STRING 1
 
 enum State
 {
@@ -16,6 +16,7 @@ enum State
 	AMP   = '&',
 };
 
+//добавить тесты
 static const std::map<std::string, char> htmlLiterals
 {
 	{ std::string("&quot;"), char(QUOTE) },
@@ -25,7 +26,7 @@ static const std::map<std::string, char> htmlLiterals
 	{ std::string("&amp;"),  char(AMP)   },
 };
 
-
+//&&lt;
 #if USE_REPLACE_STRING
 std::string ReplaceString(
 	const std::string& subject,
@@ -65,6 +66,7 @@ std::string HtmlDecode(std::string const& html)
 	std::string str;
 	std::string token;
 	bool isToken = false;
+	//range base for
 	for (size_t i = 0; i < html.size(); i++)
 	{
 		if (html[i] != '&' && !isToken)

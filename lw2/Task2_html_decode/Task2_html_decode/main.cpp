@@ -4,6 +4,7 @@
 #include <exception>
 #include "html_decode.h"
 
+// не должна завершаться после неудачного чтения &&amp;
 int main()
 {
 	std::string str;
