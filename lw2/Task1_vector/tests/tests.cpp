@@ -1,6 +1,5 @@
 #define CATCH_CONFIG_MAIN
 #include "../../../Catch2/catch.hpp"
-#include "iovector.h"
 #include "vector_multiplier.h"
 
 bool CompareFiles(std::string& fileName1, std::string& fileName2)
@@ -36,9 +35,9 @@ TEST_CASE("Test Case 'Smoke test'")
 		if (!input.is_open() || !output.is_open())
 			throw std::ios_base::failure("ERROR! Can't open file for compare!");
 
-		auto v = GetVectorDouble(input);
+		auto v = GetVector(input);
 		MultipliedByMin(v);
-		WriteVectorDouble(output, v);
+		WriteVector(output, v);
 
 		if (!output.flush())
 		{
@@ -63,7 +62,7 @@ TEST_CASE("Test Case 'Invalid input'")
 	try
 	{
 		std::ifstream input(inputFileName);
-		GetVectorDouble(input);
+		GetVector(input);
 	}
 	catch (const std::exception& e)
 	{
@@ -86,9 +85,9 @@ TEST_CASE("Test Case 'Single number'")
 		if (!input.is_open() || !output.is_open())
 			throw std::ios_base::failure("ERROR! Can't open file for compare!");
 
-		auto v = GetVectorDouble(input);
+		auto v = GetVector(input);
 		MultipliedByMin(v);
-		WriteVectorDouble(output, v);
+		WriteVector(output, v);
 
 		if (!output.flush())
 		{
@@ -119,9 +118,9 @@ TEST_CASE("Test Case 'Empty array'")
 		if (!input.is_open() || !output.is_open())
 			throw std::ios_base::failure("ERROR! Can't open file for compare!");
 
-		auto v = GetVectorDouble(input);
+		auto v = GetVector(input);
 		MultipliedByMin(v);
-		WriteVectorDouble(output, v);
+		WriteVector(output, v);
 
 		if (!output.flush())
 		{
@@ -152,9 +151,9 @@ TEST_CASE("Test Case 'Min in negative'")
 		if (!input.is_open() || !output.is_open())
 			throw std::ios_base::failure("ERROR! Can't open file for compare!");
 
-		auto v = GetVectorDouble(input);
+		auto v = GetVector(input);
 		MultipliedByMin(v);
-		WriteVectorDouble(output, v);
+		WriteVector(output, v);
 
 		if (!output.flush())
 		{
@@ -185,9 +184,9 @@ TEST_CASE("Test Case 'Zero array'")
 		if (!input.is_open() || !output.is_open())
 			throw std::ios_base::failure("ERROR! Can't open file for compare!");
 
-		auto v = GetVectorDouble(input);
+		auto v = GetVector(input);
 		MultipliedByMin(v);
-		WriteVectorDouble(output, v);
+		WriteVector(output, v);
 
 		if (!output.flush())
 		{
@@ -218,13 +217,13 @@ TEST_CASE("Test Case 'Multiple strings'")
 		if (!input.is_open() || !output.is_open())
 			throw std::ios_base::failure("ERROR! Can't open file for compare!");
 
-		auto vector = GetVectorDouble(input);
+		auto vector = GetVector(input);
 		while (!input.eof())
 		{
 			MultipliedByMin(vector);
 			std::sort(vector.begin(), vector.end());
-			WriteVectorDouble(output, vector);
-			vector = GetVectorDouble(input);
+			WriteVector(output, vector);
+			vector = GetVector(input);
 		}
 
 		if (!output.flush())

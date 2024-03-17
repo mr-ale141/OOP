@@ -1,29 +1,34 @@
 /*
-Каждый элемент массива должен быть умножен на минимальный элемент исходного массива
+РєР°Р¶РґС‹Р№ СЌР»РµРјРµРЅС‚ РјР°СЃСЃРёРІР° РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ СѓРјРЅРѕР¶РµРЅ РЅР° РјРёРЅРёРјР°Р»СЊРЅС‹Р№ СЌР»РµРјРµРЅС‚ РёСЃС…РѕРґРЅРѕРіРѕ РјР°СЃСЃРёРІР°
 */
 #include <iostream>
 #include <exception>
 #include <vector>
 #include <algorithm>
-#include "iovector.h"
+#include <string>
+#include <sstream>
 #include "vector_multiplier.h"
 
-//vector func
+std::stringstream GetStreamLine(std::istream& input)
+{
+	std::stringstream ss;
+	std::string str;
+	std::getline(input, str);
+	ss << str;
+	return ss;
+}
+
 int main()
 {
 	try
 	{
-		// readVector Double в названии не использовать
-		auto vector = GetVectorDouble(std::cin);
-		// line добавить
-		// peek() не нужен
 		while (!std::cin.eof())
 		{
+			auto streamLine = GetStreamLine(std::cin);
+			auto vector = GetVector(streamLine);
 			MultipliedByMin(vector);
 			std::sort(vector.begin(), vector.end());
-			// аналогично Read
-			WriteVectorDouble(std::cout, vector);
-			vector = GetVectorDouble(std::cin);
+			WriteVector(std::cout, vector);
 		}
 	}
 	catch (const std::exception& e)

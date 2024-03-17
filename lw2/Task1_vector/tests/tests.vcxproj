@@ -144,7 +144,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\Task1_vector\iovector.cpp" />
     <ClCompile Include="..\Task1_vector\vector_multiplier.cpp" />
     <ClCompile Include="tests.cpp" />
   </ItemGroup>

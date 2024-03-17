@@ -18,9 +18,6 @@
     <ClCompile Include="tests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Task1_vector\iovector.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\Task1_vector\vector_multiplier.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

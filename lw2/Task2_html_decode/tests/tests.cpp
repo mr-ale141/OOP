@@ -1,196 +1,52 @@
 #define CATCH_CONFIG_MAIN
 #include "../../../Catch2/catch.hpp"
 #include "../Task2_html_decode/html_decode.h"
+#include <sstream>
 
-bool CompareFiles(std::string& fileName1, std::string& fileName2)
+TEST_CASE("Empty string")
 {
-	std::ifstream f1(fileName1);
-	std::ifstream f2(fileName2);
-	if (!f1 || !f2)
-		throw std::ios_base::failure("ERROR! Can't open file for compare!");
-
-	bool answer = true;
-
-	char c1{};
-	char c2{};
-	while (f1.get(c1) && f2.get(c2))
-		if (c1 != c2)
-			return false;
-
-	if (f1.eof() && f1.eof())
-		return answer;
-	else
-		return false;
+	std::string input;
+	std::string output;
+	
+	REQUIRE(HtmlDecode(input) == output);
 }
 
-// вынести в функции
-// стринг стрим 
-// описание теста уникальное
-// &amp;lt;
-TEST_CASE("Test Case 'Smoke test'")
+TEST_CASE("Invalid token")
 {
-	auto inputFileName = std::string("in\\smoke.txt");
-	auto outputFileName = std::string("out\\smoke.txt");
-	auto compareFileName = std::string("compare\\smoke.txt");
-	try
-	{
-		std::ifstream input(inputFileName);
-		std::ofstream output(outputFileName);
-		if (!input.is_open() || !output.is_open())
-			throw std::ios_base::failure("ERROR! Can't open file for compare!");
+	std::string input("hello&ampl;world");
+	std::string output("hello&ampl;world");
 
-		std::string str;
-		std::getline(input, str);
-		output << HtmlDecode(str) << std::endl;
-
-		if (!output.flush())
-		{
-			throw std::ios_base::failure("ERROR! Can't write in output file");
-		}
-
-		input.close();
-		output.close();
-
-		REQUIRE(CompareFiles(outputFileName, compareFileName));
-	}
-	catch (...)
-	{
-		REQUIRE(1 == 0);
-		return;
-	}
+	REQUIRE(HtmlDecode(input) == output);
 }
 
-TEST_CASE("Test Case 'Invalid token'")
+TEST_CASE("Token without end")
 {
-	auto inputFileName = std::string("in\\invalid_token.txt");
-	try
-	{
-		std::ifstream input(inputFileName);
-		std::string str;
-		std::getline(input, str);
-		std::cout << HtmlDecode(str) << std::endl;
-	}
-	catch (const std::exception& e)
-	{
-		REQUIRE(std::string(e.what()).find("token-string is incorrect") != std::string::npos);
-		return;
-	}
-	REQUIRE(1 == 0);
+	std::string input("hello i &amp; am proger &amplworld");
+	std::string output("hello i & am proger &amplworld");
+
+	REQUIRE(HtmlDecode(input) == output);
 }
 
-TEST_CASE("Test Case 'Token without end'")
+TEST_CASE("Without token")
 {
-	auto inputFileName = std::string("in\\token_without_end.txt");
-	try
-	{
-		std::ifstream input(inputFileName);
-		std::string str;
-		std::getline(input, str);
-		std::cout << HtmlDecode(str) << std::endl;
-	}
-	catch (const std::exception& e)
-	{
-		REQUIRE(std::string(e.what()).find("token-string without end") != std::string::npos);
-		return;
-	}
-	REQUIRE(1 == 0);
+	std::string input("hello world!!!!!");
+	std::string output("hello world!!!!!");
+
+	REQUIRE(HtmlDecode(input) == output);
 }
 
-TEST_CASE("Test Case 'Empty test'")
+TEST_CASE("Mixed token")
 {
-	auto inputFileName = std::string("in\\empty.txt");
-	auto outputFileName = std::string("out\\empty.txt");
-	auto compareFileName = std::string("compare\\empty.txt");
-	try
-	{
-		std::ifstream input(inputFileName);
-		std::ofstream output(outputFileName);
-		if (!input.is_open() || !output.is_open())
-			throw std::ios_base::failure("ERROR! Can't open file for compare!");
+	std::string input("hello&amp;lt;world!!!!!");
+	std::string output("hello&lt;world!!!!!");
 
-		std::string str;
-		std::getline(input, str);
-		output << HtmlDecode(str) << std::endl;
-
-		if (!output.flush())
-		{
-			throw std::ios_base::failure("ERROR! Can't write in output file");
-		}
-
-		input.close();
-		output.close();
-
-		REQUIRE(CompareFiles(outputFileName, compareFileName));
-	}
-	catch (...)
-	{
-		REQUIRE(1 == 0);
-		return;
-	}
+	REQUIRE(HtmlDecode(input) == output);
 }
 
-TEST_CASE("Test Case 'Without token'")
+TEST_CASE("Double ampersand")
 {
-	auto inputFileName = std::string("in\\without_token.txt");
-	auto outputFileName = std::string("out\\without_token.txt");
-	auto compareFileName = std::string("compare\\without_token.txt");
-	try
-	{
-		std::ifstream input(inputFileName);
-		std::ofstream output(outputFileName);
-		if (!input.is_open() || !output.is_open())
-			throw std::ios_base::failure("ERROR! Can't open file for compare!");
+	std::string input("&&&&&&amp;lt;world!!!!!");
+	std::string output("&&&&&&lt;world!!!!!");
 
-		std::string str;
-		std::getline(input, str);
-		output << HtmlDecode(str) << std::endl;
-
-		if (!output.flush())
-		{
-			throw std::ios_base::failure("ERROR! Can't write in output file");
-		}
-
-		input.close();
-		output.close();
-
-		REQUIRE(CompareFiles(outputFileName, compareFileName));
-	}
-	catch (...)
-	{
-		REQUIRE(1 == 0);
-		return;
-	}
-}
-
-TEST_CASE("Test Case 'Multiple strings'")
-{
-	auto inputFileName = std::string("in\\multiple.txt");
-	auto outputFileName = std::string("out\\multiple.txt");
-	auto compareFileName = std::string("compare\\multiple.txt");
-	try
-	{
-		std::ifstream input(inputFileName);
-		std::ofstream output(outputFileName);
-		if (!input.is_open() || !output.is_open())
-			throw std::ios_base::failure("ERROR! Can't open file for compare!");
-
-		std::string str;
-		std::getline(input, str);
-		output << HtmlDecode(str) << std::endl;
-
-		if (!output.flush())
-		{
-			throw std::ios_base::failure("ERROR! Can't write in output file");
-		}
-
-		input.close();
-		output.close();
-
-		REQUIRE(CompareFiles(outputFileName, compareFileName));
-	}
-	catch (...)
-	{
-		REQUIRE(1 == 0);
-		return;
-	}
+	REQUIRE(HtmlDecode(input) == output);
 }

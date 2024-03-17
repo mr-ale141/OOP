@@ -6,59 +6,49 @@
 
 #define USE_REPLACE_STRING 1
 
-enum State
-{
-	WAIT  = '\0',
-	QUOTE = '"',
-	APOS  = '\'',
-	LT    = '<',
-	GT    = '>',
-	AMP   = '&',
-};
-
-//добавить тесты
 static const std::map<std::string, char> htmlLiterals
 {
-	{ std::string("&quot;"), char(QUOTE) },
-	{ std::string("&apos;"), char(APOS)  },
-	{ std::string("&lt;"),   char(LT)    },
-	{ std::string("&gt;"),   char(GT)    },
-	{ std::string("&amp;"),  char(AMP)   },
+	{ std::string("&quot;"), '"'  },
+	{ std::string("&apos;"), '\'' },
+	{ std::string("&lt;"),   '<'  },
+	{ std::string("&gt;"),   '>'  },
+	{ std::string("&amp;"),  '&'  },
 };
 
-//&&lt;
 #if USE_REPLACE_STRING
-std::string ReplaceString(
-	const std::string& subject,
-	const std::string& searchString,
-	const std::string& replacementString)
-{
-	if (searchString.empty())
-		return subject;
-	size_t pos = 0;
-	std::string result;
-	while (pos < subject.length())
-	{
-		size_t foundPos = subject.find(searchString, pos);
-		result.append(subject, pos, foundPos - pos);
-		if (foundPos == std::string::npos)
-			break;
-		result.append(replacementString);
-		pos = foundPos + searchString.length();
-	}
-	return result;
-}
 
 std::string HtmlDecode(std::string const& html)
 {
-	std::string str(html);
-	for (auto i = htmlLiterals.begin(); i != htmlLiterals.end(); i++)
+	std::string result;
+	std::string searchToken;
+	searchToken.push_back('&');
+	size_t pos = 0;
+	bool isToken;
+	while (pos < html.length())
 	{
-		auto key = i->first;
-		auto val = i->second;
-		str = ReplaceString(str, key, std::string({ val, '\0' }));
+		isToken = false;
+		size_t foundPos = html.find(searchToken, pos);
+		result.append(html, pos, foundPos - pos);
+		if (foundPos == std::string::npos)
+			break;
+		for (auto& token : htmlLiterals)
+		{
+			int findOffset = html.compare(foundPos, token.first.length(), token.first);
+			if (findOffset == 0)
+			{
+				result.push_back(token.second);
+				pos = foundPos + token.first.length();
+				isToken = true;
+				break;
+			}
+		}
+		if (!isToken)
+		{
+			result.append(searchToken);
+			pos = foundPos + searchToken.length();
+		}
 	}
-	return str;
+	return result;
 }
 #else
 std::string HtmlDecode(std::string const& html)
@@ -66,48 +56,55 @@ std::string HtmlDecode(std::string const& html)
 	std::string str;
 	std::string token;
 	bool isToken = false;
-	//range base for
+	char curCh;
 	for (size_t i = 0; i < html.size(); i++)
 	{
-		if (html[i] != '&' && !isToken)
+		curCh = html[i];
+		if (curCh != '&' && !isToken)
 		{
-			str.push_back(html[i]);
+			str.push_back(curCh);
 			continue;
 		}
-		else if (html[i] == '&')
+		else if (curCh == '&')
 		{
-			token.push_back(html[i]);
+			if (isToken)
+			{
+				str.append(token);
+				token.clear();
+				token.push_back(curCh);
+				continue;
+			}
+			token.push_back(curCh);
 			isToken = true;
 			continue;
 		}
-		if (html[i] != ';')
+		if (curCh != ';')
 		{
-			token.push_back(html[i]);
+			token.push_back(curCh);
 			continue;
 		}
 		else
 		{
-			token.push_back(html[i]);
+			token.push_back(curCh);
 			if (htmlLiterals.count(token) != 0)
 			{
 				char ch = htmlLiterals.at(token);
 				str.push_back(ch);
-				token.clear();
-				isToken = false;
-				continue;
+				
 			}
 			else
 			{
-				throw std::invalid_argument("ERROR! HTML token-string is incorrect!");
+				str.append(token);
 			}
+			token.clear();
+			isToken = false;
 		}
 	}
 
 	if (isToken)
 	{
-		throw std::invalid_argument("ERROR! HTML token-string without end!");
+		str.append(token);
 	}
-	
 	return str;
 }
 #endif

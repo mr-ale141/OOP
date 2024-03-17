@@ -18,17 +18,11 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="iovector.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="vector_multiplier.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="iovector.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="vector_multiplier.h">
       <Filter>Header Files</Filter>
     </ClInclude>
