@@ -1,21 +1,12 @@
 #include <iostream>
 #include <chrono>
-#include <vector>
 #include <string>
-#include <set>
+#include "prime.h"
+
+#define WITH_PRINT 0
 
 const int usInSecond = 1000000;
 const int msInSecond = 1000;
-
-std::set<int> GeneratePrimeNumbersSet(int upperBound)
-{
-	std::set<int> set;
-	for (int i = 1; i <= upperBound; i++)
-	{
-		set.insert(i);
-	}
-	return set;
-}
 
 int main(const int argc, const char* argv[])
 {
@@ -35,15 +26,18 @@ int main(const int argc, const char* argv[])
 
 	auto timeEnd = std::chrono::high_resolution_clock::now();
 	auto us = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeBegin).count();
-	
-	for (auto iter = primeNumbers.begin(); iter != primeNumbers.end(); iter++)
+
+#if WITH_PRINT
+	for (auto& i : primeNumbers)
 	{
-		std::cout << *iter << std::endl;
+		std::cout << i << std::endl;
 	}
+#endif
 
 	auto s = us / usInSecond;
 	us -= s * usInSecond;
 	auto ms = us/ msInSecond;
 	us -= ms * msInSecond;
 	std::cout << "Delta Time = " << s << " s " << ms << " ms " << us << " us " << std::endl;
+	return 0;
 }
