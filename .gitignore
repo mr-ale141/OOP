@@ -9,6 +9,7 @@ $ cat .gitignore
 *.gpi
 *.exe
 .vscode
+.vs
 .idea
 cmake-build-debug
 bin
