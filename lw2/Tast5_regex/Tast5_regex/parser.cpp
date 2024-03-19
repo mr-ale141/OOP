@@ -18,10 +18,10 @@ std::string GetProtocolStr(Protocol protocol)
 	}
 }
 
-std::string GetLowwer(const std::string& str)
+std::string GetLowwer(std::string const& str)
 {
-	std::string lowwer;
-	std::transform(lowwer.begin(), lowwer.end(), lowwer.begin(),
+	std::string lowwer(str);
+	std::transform(lowwer.cbegin(), lowwer.cend(), lowwer.begin(),
 		[](unsigned char c) { return std::tolower(c); });
 	return lowwer;
 }
@@ -49,18 +49,18 @@ Protocol GetProtocol(const std::string& str)
 bool ParseURL(std::string const& url, Protocol& protocol, int& port, std::string& host, std::string& document)
 {
 	auto lowwerUrl = GetLowwer(url);
-	const std::regex protocolR(R"(^(http[s]{0,1}|ftp))");
-	const std::regex hostWithPortR(R"((\:\/\/([a-z0-9]+\.)+([a-z0-9]+)(\:[0-9]+)?\/))");
+	const std::regex protocolR(R"(^(http[s]?|ftp))");
+	const std::regex hostWithPortR(R"((\:\/\/([a-z0-9]+\.)+([a-z0-9]+)\:?([0-9]+)?[\/]?))");
 	const std::regex hostR(R"((([a-z0-9]+\.)+([a-z0-9]+)))");
-	const std::regex portR(R"(\:[0-9]+\/$)");
+	const std::regex portR(R"(\:[0-9]+[\/]?$)");
 
 	std::string protocolStr;
 	std::string hostWithPort;
 
 	std::smatch match;
-	if (std::regex_search(url, match, protocolR))
+	if (std::regex_search(lowwerUrl, match, protocolR))
 	{
-		protocolStr = match.str(1);
+		protocolStr = match[0].str();
 		protocol = GetProtocol(protocolStr);
 	}
 	else
@@ -68,9 +68,9 @@ bool ParseURL(std::string const& url, Protocol& protocol, int& port, std::string
 		return false;
 	}
 	
-	if (std::regex_search(url, match, hostWithPortR))
+	if (std::regex_search(lowwerUrl, match, hostWithPortR))
 	{
-		hostWithPort = match.str(1);
+		hostWithPort = match[0].str();
 		std::smatch result;
 
 		if (std::regex_search(hostWithPort, result, hostR))
@@ -94,7 +94,20 @@ bool ParseURL(std::string const& url, Protocol& protocol, int& port, std::string
 		}
 		else
 		{
-			port = 80;
+			switch (protocol)
+			{
+			case Protocol::HTTP:
+				port = 80;
+				break;
+			case Protocol::HTTPS:
+				port = 443;
+				break;
+			case Protocol::FTP:
+				port = 21;
+				break;
+			default:
+				break;
+			}
 		}
 	}
 	else

@@ -15,9 +15,9 @@ int main()
 		if (isOk)
 		{
 			std::cout << "PROTOCOL: <" << GetProtocolStr(protocol) << '>' << std::endl;
-			std::cout << "HOST: <" << host << '>' << std::endl;
-			std::cout << "PORT: <" << port << '>' << std::endl;
-			std::cout << "DOC: <" << document << '>' << std::endl;
+			std::cout << "HOST    : <" << host << '>' << std::endl;
+			std::cout << "PORT    : <" << port << '>' << std::endl;
+			std::cout << "DOC     : <" << document << '>' << std::endl;
 		}
 		else
 		{
