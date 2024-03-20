@@ -5,10 +5,10 @@ int main()
 	std::string str = "hello world !!! i can";
 	std::map<std::string, std::string> params =
 	{
-		{"!!!", "!"},
-		{"i", "I"},
+		{"hel", "HEL"},
+		{"hello", "HELLO"},
 		{" ", "_"},
-		{"or", "AND"},
+		{"i", "I"},
 	};
 	auto result = ExpandTemplate(str, params);
 

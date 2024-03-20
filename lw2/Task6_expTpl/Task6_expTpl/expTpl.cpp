@@ -128,7 +128,7 @@ std::string Replace(const std::string& s, std::map<std::string, std::string> con
 		}
 
 
-		if (findNew.length() < find.length())
+		if (findNew.length() < find.length() && u < uOld)
 		{
 			if (findNew.length()) buf.pop_back();
 			result.append(ReplaceString(buf, find, params.at(find)));
@@ -136,7 +136,7 @@ std::string Replace(const std::string& s, std::map<std::string, std::string> con
 			if (findNew.length()) buf.push_back(s[i]);
 		}
 
-		if (findNew.length() != 0 && (u == 0 && uOld != 0 ) || (findNew.length() == 1 && u != 0))
+		if (findNew.length() != 0 && (u == 0 && uOld != 0) || (findNew.length() == 1 && u != 0))
 		{
 			result.append(ReplaceString(buf, findNew, params.at(findNew)));
 			findNew.clear();
