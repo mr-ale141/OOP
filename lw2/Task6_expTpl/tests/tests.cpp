@@ -10,8 +10,9 @@ TEST_CASE("Smoke test")
 		{"!!!", "!"},
 		{"i", "I"},
 		{" ", "_"},
+		{"or", "AND"},
 	};
 	auto result = ExpandTemplate(str, params);
 
-	REQUIRE(result == "hello_world_!_I_can");
+	REQUIRE(result == "hello_wANDld_!_I_can");
 }

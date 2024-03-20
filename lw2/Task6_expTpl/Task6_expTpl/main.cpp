@@ -2,12 +2,13 @@
 
 int main()
 {
-    std::string str = "hello ghjk kl njworldjn fjg n";
+	std::string str = "hello world !!! i can";
 	std::map<std::string, std::string> params =
 	{
-		{"hel", "!"},
-		{"hello", "I"},
-		{"world", "_"},
+		{"!!!", "!"},
+		{"i", "I"},
+		{" ", "_"},
+		{"or", "AND"},
 	};
 	auto result = ExpandTemplate(str, params);
 

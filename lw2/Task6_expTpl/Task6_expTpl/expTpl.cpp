@@ -117,7 +117,7 @@ std::string Replace(const std::string& s, std::map<std::string, std::string> con
 		uOld = u;
 		u = GetAutoMove(u, s[i]);
 		findNew = Check(u, i + 1);
-		if (findNew.length()) find = findNew;
+
 		if (u == 0 && uOld == 0)
 		{
 			result.push_back(s[i]);
@@ -127,20 +127,24 @@ std::string Replace(const std::string& s, std::map<std::string, std::string> con
 			buf.push_back(s[i]);
 		}
 
-		if (u == 0 && uOld != 0)
+
+		if (findNew.length() < find.length())
 		{
-			if (find.length())
-			{
-				result.append(ReplaceString(buf, find, params.at(find)));
-				find.clear();
-				buf.clear();
-			}
-			else
-			{
-				result.append(buf);
-				buf.clear();
-			}
+			if (findNew.length()) buf.pop_back();
+			result.append(ReplaceString(buf, find, params.at(find)));
+			buf.clear();
+			if (findNew.length()) buf.push_back(s[i]);
 		}
+
+		if (findNew.length() != 0 && (u == 0 && uOld != 0 ) || (findNew.length() == 1 && u != 0))
+		{
+			result.append(ReplaceString(buf, findNew, params.at(findNew)));
+			findNew.clear();
+			buf.clear();
+			u = 0;
+		}
+
+		find = findNew;
 	}
 	return result;
 }
