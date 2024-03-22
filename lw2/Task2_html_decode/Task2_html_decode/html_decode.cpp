@@ -21,9 +21,10 @@ std::string HtmlDecode(std::string const& html)
 {
 	std::string result;
 	std::string searchToken;
+	// упростить
 	searchToken.push_back('&');
 	size_t pos = 0;
-	bool isToken;
+	bool isToken; // лишнее
 	while (pos < html.length())
 	{
 		isToken = false;
@@ -31,6 +32,7 @@ std::string HtmlDecode(std::string const& html)
 		result.append(html, pos, foundPos - pos);
 		if (foundPos == std::string::npos)
 			break;
+		// цикл в функцию
 		for (auto& token : htmlLiterals)
 		{
 			int findOffset = html.compare(foundPos, token.first.length(), token.first);
@@ -90,7 +92,6 @@ std::string HtmlDecode(std::string const& html)
 			{
 				char ch = htmlLiterals.at(token);
 				str.push_back(ch);
-				
 			}
 			else
 			{

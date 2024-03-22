@@ -28,6 +28,7 @@ TEST_CASE("URL without PORT")
 
 	auto isOk = ParseURL(url, protocol, port, host, document);
 
+	// ф-ия проверки результатов
 	REQUIRE(isOk);
 	REQUIRE(protocol == Protocol::HTTP);
 	REQUIRE(port == 80);
@@ -117,6 +118,7 @@ TEST_CASE("URL with number in host")
 	REQUIRE(document == "docs/document1.html?page=30&lang=en#title");
 }
 
+// должно быть что положительный тест
 TEST_CASE("URL caMMelCase")
 {
 	const std::string url("HTTP://wWw.mySIte.coM/docs/document1.html?page=30&lang=en#title");
@@ -188,3 +190,5 @@ TEST_CASE("URL FTP default")
 	REQUIRE(host == "www.mysite.com");
 	REQUIRE(document == "");
 }
+
+// port max min

@@ -21,8 +21,8 @@ TEST_CASE("Invalid token")
 
 TEST_CASE("Token without end")
 {
-	std::string input("hello i &amp; am proger &amplworld");
-	std::string output("hello i & am proger &amplworld");
+	std::string input("hello i &amp; am proger &am");
+	std::string output("hello i & am proger &am");
 
 	REQUIRE(HtmlDecode(input) == output);
 }

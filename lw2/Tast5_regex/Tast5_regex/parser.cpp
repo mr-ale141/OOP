@@ -18,12 +18,12 @@ std::string GetProtocolStr(Protocol protocol)
 	}
 }
 
-std::string GetLowwer(std::string const& str)
+std::string GetLower(std::string const& str)
 {
-	std::string lowwer(str);
-	std::transform(lowwer.cbegin(), lowwer.cend(), lowwer.begin(),
+	std::string lower(str);
+	std::transform(lower.cbegin(), lower.cend(), lower.begin(),
 		[](unsigned char c) { return std::tolower(c); });
-	return lowwer;
+	return lower;
 }
 
 Protocol GetProtocol(const std::string& str)
@@ -46,9 +46,11 @@ Protocol GetProtocol(const std::string& str)
 	}
 }
 
+
+// разделить функцию на логические блоки
 bool ParseURL(std::string const& url, Protocol& protocol, int& port, std::string& host, std::string& document)
 {
-	auto lowwerUrl = GetLowwer(url);
+	auto lowwerUrl = GetLower(url);
 	const std::regex protocolR(R"(^(http[s]?|ftp))");
 	const std::regex hostWithPortR(R"((\:\/\/([a-z0-9]+\.)+([a-z0-9]+)\:?([0-9]+)?[\/]?))");
 	const std::regex hostR(R"((([a-z0-9]+\.)+([a-z0-9]+)))");
@@ -68,6 +70,7 @@ bool ParseURL(std::string const& url, Protocol& protocol, int& port, std::string
 		return false;
 	}
 	
+	// lowwer -> lower
 	if (std::regex_search(lowwerUrl, match, hostWithPortR))
 	{
 		hostWithPort = match[0].str();

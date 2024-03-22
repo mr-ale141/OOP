@@ -1,12 +1,12 @@
 #include "prime.h"
 
-static const int maxNum = 100000000;
-static const int firstPrime = 2;
+const int maxNum = 100000000;
+const int firstPrime = 2;
 
 std::set<int> GeneratePrimeNumbersSet(int upperBound)
 {
 	std::set<int> set;
-	if (upperBound < 2 || upperBound > maxNum)
+	if (upperBound < firstPrime || upperBound > maxNum)
 	{
 		return set;
 	}
@@ -19,18 +19,20 @@ std::set<int> GeneratePrimeNumbersSet(int upperBound)
 		if (!arr[i])
 		{
 			set.insert(i);
-			for (int j = i * i; j <= upperBound; j += i)
+			int step = (i == 2) ? i : i * 2;
+			for (int j = i * i; j <= upperBound; j += step)
 			{
 				arr[j] = true;
 			}
 		}
 	}
 
+	// время втсавки и удаления разными способами в set от количества элементов во множестве
 	for (; i <= upperBound; i++)
 	{
 		if (!arr[i])
 		{
-			set.insert(i);
+			set.insert(set.end(), i);
 		}
 	}
 

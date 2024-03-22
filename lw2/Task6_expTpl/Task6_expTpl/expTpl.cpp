@@ -1,34 +1,36 @@
 #include <vector>
 #include "expTpl.h"
 
-// v - текущая вершина
-// u - наидлиннейший суффикс строки v + ch || root
+// v - current point
+// u - longer suffics v + ch || root
 
+// размер алфавита
 const int countChar = 256;
 
+//структуры с заглавной буквы
 struct bohrVrtx
 {
+	//это в память не влезет
 	int nextVrtx[countChar];
-	int patNum;
+	int patNum;//название не удачное
 	int suffLink;
-	int autoMove[countChar]; //запоминание перехода автомата
-	int par; //вершина-отец в дереве
-	char symb; //символ на ребре от par к этой вершине 
-	int suffFlink; //"хорошая" суф. ссылка
-	bool flag;
+	int autoMove[countChar]; //remember step
+	int par; //parent
+	char symb; //symbol for this
+	int suffFlink; //"best" suf. link
+	bool flag;// описать сущность
 };
 
 std::vector<bohrVrtx> bohr;
 std::vector<std::string> pattern;
 
-bohrVrtx MakeBohrVrtx(int p, char c) //передаем номер отца и символ на ребре в боре
+bohrVrtx MakeBohrVrtx(int p, char c) //p - parrent, c - char in 
 {
 	bohrVrtx v;
-	//(255)=(2^8-1)=(все единицы в каждом байте памяти)=(-1 в дополнительном коде целого 4-байтного числа int)
-	memset(v.nextVrtx, 255, sizeof(v.nextVrtx));
+	memset(v.nextVrtx, 255U, sizeof(v.nextVrtx));
 	v.flag = false;
 	v.suffLink = -1;
-	memset(v.autoMove, 255, sizeof(v.autoMove));
+	memset(v.autoMove, 255U, sizeof(v.autoMove));
 	v.par = p;
 	v.symb = c;
 	v.suffFlink = -1;
@@ -39,8 +41,8 @@ int GetAutoMove(int v, char ch);
 
 int GetSuffLink(int v)
 {
-	if (bohr[v].suffLink == -1) //если еще не считали
-		if (v == 0 || bohr[v].par == 0) //если v - корень или предок v - корень
+	if (bohr[v].suffLink == -1) //if suffics not found
+		if (v == 0 || bohr[v].par == 0) //if v - root or parent v - root
 			bohr[v].suffLink = 0;
 		else
 			bohr[v].suffLink = GetAutoMove(GetSuffLink(bohr[v].par), bohr[v].symb);
@@ -65,7 +67,7 @@ int GetSuffFlink(int v)
 	if (bohr[v].suffFlink == -1)
 	{
 		int u = GetSuffLink(v);
-		if (u == 0) //либо v - корень, либо суф. ссылка v указывает на корень 
+		if (u == 0) //or v - root, or sufics link v pointer to root 
 			bohr[v].suffFlink = 0;
 		else
 			bohr[v].suffFlink = (bohr[u].flag) ? u : GetSuffFlink(u);
@@ -127,7 +129,6 @@ std::string Replace(const std::string& s, std::map<std::string, std::string> con
 			buf.push_back(s[i]);
 		}
 
-
 		if (findNew.length() < find.length() && u < uOld)
 		{
 			if (findNew.length()) buf.pop_back();
@@ -153,17 +154,17 @@ void BohrInit()
 {
 	bohr.clear();
 	pattern.clear();
-	//добавляем единственную вершину - корень
+	//add ones Node - root
 	bohr.push_back(MakeBohrVrtx(0, 0));
 }
 
 void AddStringToBohr(const std::string& s) 
 {
-	int num = 0; //начинаем с корня   
+	int num = 0; //start from root  
 	for (int i = 0; i < s.length(); i++)
 	{
-		char ch = s[i]; //получаем номер в алфавите
-		if (bohr[num].nextVrtx[ch] == -1) //-1 - признак отсутствия ребра
+		char ch = s[i];
+		if (bohr[num].nextVrtx[ch] == -1) // -1 - not found
 		{ 
 			bohr.push_back(MakeBohrVrtx(num, ch));
 			bohr[num].nextVrtx[ch] = bohr.size() - 1;

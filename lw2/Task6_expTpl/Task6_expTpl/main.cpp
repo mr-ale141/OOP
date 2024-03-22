@@ -2,6 +2,8 @@
 
 int main()
 {
+	// добавить тесты из описания
+	// программа
 	std::string str = "hello world !!! i can";
 	std::map<std::string, std::string> params =
 	{
