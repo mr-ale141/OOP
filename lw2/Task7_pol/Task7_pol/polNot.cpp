@@ -1,4 +1,5 @@
 #include <vector>
+#include <memory>
 #include "polNot.h"
 
 enum Operation
@@ -20,12 +21,12 @@ enum State
 struct Node
 {
 	Operation operation = NOT;
-	std::vector<Node*> operands;
-	Node* parent = nullptr;
+	std::vector<std::shared_ptr<Node>> operands;
+	std::shared_ptr<Node> parent;
 	int res = 0;
 };
 
-static void CalculateExpression(Node* current)
+static void CalculateExpression(std::shared_ptr<Node> current)
 {
 	if (current->operation == SUM)
 		for (auto i : current->operands)
@@ -38,7 +39,7 @@ static void CalculateExpression(Node* current)
 	}
 }
 
-static void SetOperations(Node* current, char ch)
+static void SetOperations(std::shared_ptr<Node> current, char ch)
 {
 	if (ch == '+')
 		current->operation = SUM;
@@ -46,9 +47,9 @@ static void SetOperations(Node* current, char ch)
 		current->operation = MULT;
 }
 
-static bool IsNewExpression(Node*& current, std::istream& input)
+static bool IsNewExpression(std::shared_ptr<Node>& current, std::istream& input)
 {
-	Node* newNode = new Node();
+	auto newNode = std::make_shared<Node>();
 	int operand{};
 	if (input >> operand)
 	{
@@ -70,8 +71,7 @@ static bool IsNewExpression(Node*& current, std::istream& input)
 int Calculate(std::istream& input)
 {
 	State state = START;
-	Node* root = new Node();
-	Node* current = root;
+	auto current = std::make_shared<Node>();
 	char ch;
 
 	while (input >> ch)
