@@ -60,7 +60,7 @@ bool Car::SetGear(int gear)
 	}
 	else
 	{
-		std::cout << "ERROR! Gear is not bitween renge" << std::endl;
+		std::cout << "ERROR! Gear is not between renge" << std::endl;
 		return false;
 	}
 }

@@ -81,7 +81,7 @@ bool Transmission::SetSpeed(int speed)
 	}
 	else
 	{
-		std::cout << "ERROR! Speed is not bitween range for current Gear" << std::endl;
+		std::cout << "ERROR! Speed is not between range for current Gear" << std::endl;
 		return false;
 	}
 }
