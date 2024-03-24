@@ -25,13 +25,53 @@ struct Node
 	int res = 0;
 };
 
+static void CalculateExpression(Node* current)
+{
+	if (current->operation == SUM)
+		for (auto i : current->operands)
+			current->res += i->res;
+	else
+	{
+		current->res = 1;
+		for (auto i : current->operands)
+			current->res *= i->res;
+	}
+}
+
+static void SetOperations(Node* current, char ch)
+{
+	if (ch == '+')
+		current->operation = SUM;
+	else if (ch == '*')
+		current->operation = MULT;
+}
+
+static bool IsNewExpression(Node*& current, std::istream& input)
+{
+	Node* newNode = new Node();
+	int operand{};
+	if (input >> operand)
+	{
+		newNode->res = operand;
+		newNode->parent = current;
+		current->operands.push_back(newNode);
+	}
+	else
+	{
+		newNode->parent = current;
+		current->operands.push_back(newNode);
+		current = newNode;
+		input.clear();
+		return true;
+	}
+	return false;
+}
+
 int Calculate(std::istream& input)
 {
 	State state = START;
 	Node* root = new Node();
 	Node* current = root;
-	Node* newNode = nullptr;
-	int operand{};
 	char ch;
 
 	while (input >> ch)
@@ -45,122 +85,32 @@ int Calculate(std::istream& input)
 				state = ERROR;
 			break;
 		case OPERAND:
-			newNode = new Node();
-			if (input >> operand)
-				newNode->res = operand;
-			else
-				; // 
-			;
+			if (ch == ')')
+			{
+				state = END;
+				break;
+			}
+			input.unget();
+			if (IsNewExpression(current, input))
+				state = START;
 			break;
 		case OPERATION:
 			state = OPERAND;
-			if (ch == '+')
-				current->operation = SUM;
-			else if (ch == '*')
-				current->operation = MULT;
-			else
+			SetOperations(current, ch);
+			if (current->operation == NOT)
 				state = ERROR;
 			break;
 		case END:
-
+			input.unget();
+			CalculateExpression(current);
+			current = current->parent;
+			state = OPERAND;
 			break;
-		default:
+		case ERROR:
 			throw std::invalid_argument("ERROR! Incorrect input");
 			break;
 		}
 	}
-}
-
-
-
-
-
-
-
-
-
-
-
-
-bool IsNum(char ch)
-{
-	return ch >= '0' && ch <= '9';
-}
-
-std::stack<std::string> Parse1(const std::string& str)
-{
-	std::stack<char> operationsStack;
-	std::stack<std::string> operandsStack;
-	std::string hold;
-	int count{};
-
-	for (size_t i = 0; i < str.length(); i++)
-	{
-		switch (str[i])
-		{
-		case '(':
-			operandsStack.push("(");
-			count++;
-			break;
-		case ')':
-			hold.clear();
-			hold.push_back(operationsStack.top());
-			operandsStack.push(hold);
-			operationsStack.pop();
-			operandsStack.push(")");
-			count--;
-			break;
-		case '+':
-		case '*':
-			operationsStack.push(str[i]);
-			break;
-		default:
-			hold.clear();
-			while (i < str.length() && (IsNum(str[i]) || str[i] == '-'))
-			{
-				hold.push_back(str[i]);
-				i++;
-			}
-			i--;
-			if (!hold.length())
-				throw std::invalid_argument("ERROR! Incorrect input");
-			operandsStack.push(hold);
-			break;
-		}
-	}
-
-	if (count)
-		throw std::invalid_argument("ERROR! Incorrect input");
-
-	return operandsStack;
-}
-
-int Calculate1(std::stack<std::string>& backPoland)
-{
-	std::stack<int> operand;
-	std::stack<Operation> operation;
-	State state = READY;
-
-
-	while (backPoland.size())
-	{
-		std::string item = backPoland.top();
-		backPoland.pop();
-		switch (state)
-		{
-		case READY:
-			if (item == ")")
-				state = OPERATION;
-			else
-				throw std::invalid_argument("ERROR! Incorrect input");
-			break;
-		case OPERATION:
-
-			break;
-		case OPERAND:
-			break;
-		default:
-			break;
-		}
-	}
+	CalculateExpression(current);
+	return current->res;
 }
