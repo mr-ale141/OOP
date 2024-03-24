@@ -27,19 +27,6 @@ const std::map<Gear, std::pair<int, int>> speedLimits =
 	{ G5, {      50,      150 } },
 };
 
-/*
-const std::map<Gear, double> gearRatio =
-{
-	{ R, -24.0  },
-	{ N,   0.0  },
-	{ G1, 16.0  },
-	{ G2,  9.6  },
-	{ G3,  8.0  },
-	{ G4,  5.33 },
-	{ G5,  3.2  },
-};
-*/
-
 class Transmission
 {
 public:

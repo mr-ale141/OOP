@@ -133,6 +133,9 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\task1_car\car.cpp" />
+    <ClCompile Include="..\task1_car\engine.cpp" />
+    <ClCompile Include="..\task1_car\transmission.cpp" />
     <ClCompile Include="tests.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

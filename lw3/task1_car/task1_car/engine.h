@@ -11,10 +11,7 @@ public:
 	bool TurnOn();
 	bool TurnOff();
 	bool IsWorking() const;
-	// bool SetRpm(double);
-	// double GetRpm() const;
 private:
 	bool _isWorking = false;
 	Transmission& _refTransmission;
-	// double _rpm = 0.0;
 };

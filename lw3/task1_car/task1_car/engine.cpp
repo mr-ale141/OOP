@@ -28,16 +28,3 @@ bool Engine::IsWorking() const
 {
 	return _isWorking;
 }
-
-/*
-bool Engine::SetRpm(double rpm)
-{
-	_rpm = rpm;
-	return true;
-}
-
-double Engine::GetRpm() const
-{
-	return _rpm;
-}
-*/
