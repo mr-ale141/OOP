@@ -1,0 +1,81 @@
+583ms (fn = x(i) = x(i-1) + x0, где x0 = 1 - переменная)
+-------------------------------------------------------------------------
+
+CMDs:
+	var <идентификатор>
+	let <идентификатор1> = <число с плавающей запятой>
+	let <идентификатор1> = <идентификатор2>
+	fn <идентификатор1> = <идентификатор2>
+	fn <идентификатор1> = <идентификатор2><операция><идентификатор3>
+	print <идентификатор>
+	printvars
+	printfns
+OUTs:
+	<идентификатор>:<значение>
+	<идентификатор>:NaN
+
+--------------------------------------------------------------------------
+
+enum Operation
+	SUM
+	SUB
+	MUL
+	DIV
+
+struct Var
+	bool isActual = false
+	double value = 0.0
+
+struct Func<TL, TR>
+	TL operandLeft
+	TR operandRight
+	Operation operation
+	Variable value
+
+class Calculator
+	public:
+		void Exec(string);
+	private:
+		Storage _storage;
+		Printer _printer;
+		Scaner _scanner;
+
+class Printer
+	public:
+		void Show(type);
+	private:
+		ostream _output
+
+class Storage
+	public:
+	private:
+		unordered_map<string, Var> _vars
+		unordered_map<string, Func> _funcs
+
+class Scanner
+	public:
+	private:
+		regex _nameR
+		regex _cmdR[]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

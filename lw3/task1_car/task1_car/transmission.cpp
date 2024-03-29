@@ -4,23 +4,23 @@
 
 int Transmission::GetSpeed() const
 {
-	return _speed;
+	return m_speed;
 }
 
 Gear Transmission::GetGear() const 
 {
-	return _gear;
+	return m_gear;
 }
 
 bool Transmission::SetGear(Gear gear)
 {
-	if (_refEngine.IsWorking())
+	if (m_refEngine.IsWorking())
 	{
 		if (gear == R)
 		{
-			if (_speed == 0)
+			if (m_speed == 0)
 			{
-				_gear = gear;
+				m_gear = gear;
 				return true;
 			}
 			else
@@ -31,13 +31,13 @@ bool Transmission::SetGear(Gear gear)
 		}
 		else
 		{
-			if (_speed >= 0)
+			if (m_speed >= 0)
 			{
 				int newMinSpeed = speedLimits.at(gear).first;
 				int newMaxSpeed = speedLimits.at(gear).second;
-				if (_speed >= newMinSpeed && _speed <= newMaxSpeed)
+				if (m_speed >= newMinSpeed && m_speed <= newMaxSpeed)
 				{
-					_gear = gear;
+					m_gear = gear;
 					return true;
 				}
 				else
@@ -55,7 +55,7 @@ bool Transmission::SetGear(Gear gear)
 	}
 	else if (gear == N)
 	{
-		_gear = gear;
+		m_gear = gear;
 		return true;
 	}
 	else
@@ -67,16 +67,16 @@ bool Transmission::SetGear(Gear gear)
 
 bool Transmission::SetSpeed(int speed)
 {
-	int currentMinSpeed = speedLimits.at(_gear).first;
-	int currentMaxSpeed = speedLimits.at(_gear).second;
+	int currentMinSpeed = speedLimits.at(m_gear).first;
+	int currentMaxSpeed = speedLimits.at(m_gear).second;
 	if (speed >= currentMinSpeed && speed <= currentMaxSpeed)
 	{
-		if (_gear == N && std::abs(speed) > std::abs(_speed))
+		if (m_gear == N && std::abs(speed) > std::abs(m_speed))
 		{
 			std::cout << "ERROR! Can't boost the speed in N gear" << std::endl;
 			return false;
 		}
-		_speed = speed;
+		m_speed = speed;
 		return true;
 	}
 	else

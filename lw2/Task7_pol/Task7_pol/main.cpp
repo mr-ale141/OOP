@@ -1,3 +1,6 @@
+#include <iostream>
+#include <sstream>
+#include <string>
 #include "polNot.h"
 
 int main()

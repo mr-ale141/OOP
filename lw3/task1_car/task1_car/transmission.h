@@ -4,7 +4,7 @@
 #include <utility>
 
 class Engine;
-
+// class enum
 enum Gear
 {
 	R = -1,
@@ -16,6 +16,7 @@ enum Gear
 	G5
 };
 
+// перенести в cpp
 const std::map<Gear, std::pair<int, int>> speedLimits =
 {
 	{ R,  {     -20,       0  } },
@@ -30,14 +31,14 @@ const std::map<Gear, std::pair<int, int>> speedLimits =
 class Transmission
 {
 public:
-	Transmission(Engine& ref) : _refEngine(ref) {}
+	Transmission(Engine& ref) : m_refEngine(ref) {}
 	int GetSpeed() const;
 	Gear GetGear() const;
 	bool SetGear(Gear);
 	bool SetSpeed(int);
 private:
-	Gear _gear = N;
-	int _speed = 0;
-	Engine& _refEngine;
+	Gear m_gear = N;
+	int m_speed = 0;
+	Engine& m_refEngine;
 };
 

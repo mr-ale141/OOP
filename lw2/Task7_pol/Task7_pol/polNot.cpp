@@ -1,7 +1,10 @@
+#include <iostream>
+#include <string>
 #include <vector>
 #include <memory>
 #include "polNot.h"
 
+//class
 enum Operation
 {
 	SUM,
@@ -20,12 +23,14 @@ enum State
 
 struct Node
 {
+	// not -> rename
 	Operation operation = NOT;
 	std::vector<std::shared_ptr<Node>> operands;
 	std::shared_ptr<Node> parent;
 	int res = 0;
 };
 
+//collback
 static void CalculateExpression(std::shared_ptr<Node> current)
 {
 	if (current->operation == SUM)

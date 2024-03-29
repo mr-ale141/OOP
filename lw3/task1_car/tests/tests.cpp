@@ -67,7 +67,7 @@ TEST_CASE("Turn OFF engine")
 			REQUIRE(car.TurnOnEngine());
 			REQUIRE(car.SetGear((int)G1));
 			REQUIRE(car.SetSpeed(30));
-
+			// then
 			WHEN("Trying turn OFF Engine is failed")
 			{
 				REQUIRE(!car.TurnOffEngine());

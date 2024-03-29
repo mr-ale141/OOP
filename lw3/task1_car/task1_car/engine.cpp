@@ -4,17 +4,17 @@
 
 bool Engine::TurnOn()
 {
-	_isWorking = true;
+	m_isWorking = true;
 	return true;
 }
 
 bool Engine::TurnOff()
 {
-	auto currentGear = _refTransmission.GetGear();
-	auto currentSpeed = _refTransmission.GetSpeed();
+	auto currentGear = m_refTransmission.GetGear();
+	auto currentSpeed = m_refTransmission.GetSpeed();
 	if (currentGear == N && currentSpeed == 0)
 	{
-		_isWorking = false;
+		m_isWorking = false;
 		return true;
 	}
 	else
@@ -26,5 +26,5 @@ bool Engine::TurnOff()
 
 bool Engine::IsWorking() const
 {
-	return _isWorking;
+	return m_isWorking;
 }

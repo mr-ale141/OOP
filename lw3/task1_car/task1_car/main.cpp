@@ -55,7 +55,10 @@ static bool GetArg(int& arg)
     }
     return false;
 }
-
+// insert value лишний
+// можно включить нейтраль двигая назад
+// машина не стоит переключиться назад нельзя
+// разделить подсказку по выключению двигателя
 int main()
 {
     Car car;
@@ -63,7 +66,8 @@ int main()
     int arg{};
     std::string res;
     PrintMenu();
-    while (std::getline(std::cin, cmd))
+    // перенести в контролер
+    while (std::cin >> cmd)
     {
         if (!cmd.length())
         {

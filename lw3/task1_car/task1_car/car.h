@@ -1,20 +1,20 @@
 #pragma once
 #include "engine.h"
 #include "transmission.h"
-
+// class
 enum Direction
 {
 	REVERSE = -1,
 	STOP,
 	FORWARD
 };
-
+// указывать имя
 class Car
 {
 public:
 	Car() : 
-		_engine      { Engine(_transmission) },
-		_transmission{ Transmission(_engine) }
+		m_engine      { Engine(m_transmission) },
+		m_transmission{ Transmission(m_engine) }
 	{}
 	int GetSpeed() const;
 	Gear GetGear() const;
@@ -25,6 +25,6 @@ public:
 	bool SetSpeed(int);
 	bool SetGear(int);
 private:
-	Engine _engine;
-	Transmission _transmission;
+	Engine m_engine;
+	Transmission m_transmission;
 };

@@ -2,16 +2,16 @@
 
 class Transmission;
 
-const int rpmMax = 4000;
+//const int rpmMax = 4000;
 
 class Engine
 {
 public:
-	Engine(Transmission& ref) : _refTransmission(ref) {}
+	Engine(Transmission& ref) : m_refTransmission(ref) {}
 	bool TurnOn();
 	bool TurnOff();
 	bool IsWorking() const;
 private:
-	bool _isWorking = false;
-	Transmission& _refTransmission;
+	bool m_isWorking = false;
+	Transmission& m_refTransmission;
 };

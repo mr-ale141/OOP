@@ -3,22 +3,22 @@
 
 int Car::GetSpeed() const
 {
-	return _transmission.GetSpeed();
+	return m_transmission.GetSpeed();
 }
 
 Gear Car::GetGear() const
 {
-	return _transmission.GetGear();
+	return m_transmission.GetGear();
 }
 
 bool Car::IsTornedOn() const
 {
-	return _engine.IsWorking();
+	return m_engine.IsWorking();
 }
 
 Direction Car::GetDirection() const
 {
-	int currentSpeed = _transmission.GetSpeed();
+	int currentSpeed = m_transmission.GetSpeed();
 	if (currentSpeed < 0)
 	{
 		return REVERSE;
@@ -35,28 +35,28 @@ Direction Car::GetDirection() const
 
 bool Car::TurnOnEngine()
 {
-	return _engine.TurnOn();
+	return m_engine.TurnOn();
 }
 
 bool Car::TurnOffEngine()
 {
-	return _engine.TurnOff();
+	return m_engine.TurnOff();
 }
 
 bool Car::SetSpeed(int speed)
 {
-	if (_transmission.GetGear() == R)
+	if (m_transmission.GetGear() == R)
 	{
 		speed = -speed;
 	}
-	return _transmission.SetSpeed(speed);
+	return m_transmission.SetSpeed(speed);
 }
 
 bool Car::SetGear(int gear)
 {
 	if (gear >= R && gear <= G5)
 	{
-		return _transmission.SetGear((Gear)gear);
+		return m_transmission.SetGear((Gear)gear);
 	}
 	else
 	{
