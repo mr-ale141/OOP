@@ -19,7 +19,7 @@ bool Alu::Declare(const Cmd& cmd)
 	return true;
 }
 
-int Alu::UpdateFunc(const int indexFunc)
+int Alu::UpdateFuncValue(const int indexFunc)
 {
 	if (indexFunc == isNotFunc)
 		return notValid;
@@ -46,7 +46,7 @@ int Alu::UpdateFunc(const int indexFunc)
 	return func.childVar;
 }
 
-void Alu::UpdateChilds(const int indexVar)
+void Alu::UpdateChildVars(const int indexVar)
 {
 	std::vector<int> needUpdate;
 	needUpdate.push_back(indexVar);
@@ -57,7 +57,7 @@ void Alu::UpdateChilds(const int indexVar)
 		needUpdate.pop_back();
 		for (auto indexFunc : m_vars[i].childFuncs)
 		{
-			int nextVar = UpdateFunc(indexFunc);
+			int nextVar = UpdateFuncValue(indexFunc);
 			if (nextVar != notValid)
 			{
 				needUpdate.push_back(nextVar);
@@ -66,54 +66,68 @@ void Alu::UpdateChilds(const int indexVar)
 	}
 }
 
-bool Alu::InitVar(const Cmd& cmd)
+bool Alu::ReinitOldVar(const std::string& name, double newValue)
+{
+	int indexVar = m_names.at(name);
+	if (m_vars[indexVar].function > isNotFunc)
+	{
+		return false;
+	}
+	m_vars[indexVar].value = newValue;
+	UpdateChildVars(indexVar);
+	return true;
+}
+
+bool Alu::CreateNewVar(const std::string& name, double newValue)
 {
 	int indexVar = (int)m_vars.size();
-	if (m_names.count(cmd.firstName))
-	{
-		indexVar = m_names.at(cmd.firstName);
-		if (m_vars[indexVar].function > isNotFunc)
-		{
-			return false;
-		}
-		m_vars[indexVar].value = cmd.value;
-		UpdateChilds(indexVar);
-		return true;
-	}
 	Var var;
-	var.name = cmd.firstName;
-	var.value = cmd.value;
+	var.name = name;
+	var.value = newValue;
 	m_vars.push_back(var);
 	m_names[var.name] = indexVar;
 	return true;
 }
 
-bool Alu::InitFunc(const Cmd& cmd)
+bool Alu::HandlerVar(const Cmd& cmd)
 {
-	if (!m_names.count(cmd.midleName) || !m_names.count(cmd.lastName))
+
+	double value = cmd.value;
+	if (cmd.midleName.size())
+	{
+		value = m_vars[m_names.at(cmd.midleName)].value;
+	}
+	if (m_names.count(cmd.firstName))
+	{
+		return ReinitOldVar(cmd.firstName, value);
+	}
+	return CreateNewVar(cmd.firstName, value);
+}
+
+bool Alu::ReinitOldFunc(const Cmd& cmd)
+{
+	int indexVar = m_names.at(cmd.firstName);
+	int indexFunc = m_vars[indexVar].function;
+	if (indexFunc == isNotFunc)
 	{
 		return false;
 	}
+	m_funcs[indexFunc].operandLeft = m_names.at(cmd.midleName);
+	m_funcs[indexFunc].operandRight = (cmd.lastName.size()) ? m_names.at(cmd.lastName) : notValid;
+	m_funcs[indexFunc].operation = cmd.operation;
+	UpdateChildVars(UpdateFuncValue(indexFunc));
+	return true;
+}
+
+bool Alu::CreateNewFunc(const Cmd& cmd)
+{
 	int indexFunc = (int)m_funcs.size();
 	int indexVar = (int)m_vars.size();
-	if (m_names.count(cmd.firstName))
-	{
-		indexVar = m_names.at(cmd.firstName);
-		indexFunc = m_vars[indexVar].function;
-		if (indexFunc == isNotFunc)
-		{
-			return false;
-		}
-		m_funcs[indexFunc].operandLeft = m_names.at(cmd.midleName);
-		m_funcs[indexFunc].operandRight = m_names.at(cmd.lastName);
-		m_funcs[indexFunc].operation = cmd.operation;
-		UpdateChilds(UpdateFunc(indexFunc));
-		return true;
-	}
+
 	Func func;
 	func.name = cmd.firstName;
 	func.operandLeft = m_names.at(cmd.midleName);
-	func.operandRight = m_names.at(cmd.lastName);
+	func.operandRight = (cmd.lastName.size()) ? m_names.at(cmd.lastName) : notValid;
 	func.operation = cmd.operation;
 	func.childVar = indexVar;
 
@@ -125,76 +139,18 @@ bool Alu::InitFunc(const Cmd& cmd)
 	m_funcs.push_back(func);
 	m_vars.push_back(var);
 	m_names[var.name] = indexVar;
-	
-	UpdateFunc(indexFunc);
+
+	UpdateFuncValue(indexFunc);
 	return true;
 }
 
-bool Alu::CopyFunc(const Cmd& cmd)
+bool Alu::HandlerFunc(const Cmd& cmd)
 {
-	if (!m_names.count(cmd.midleName))
-	{
-		return false;
-	}
-	int indexFunc = (int)m_funcs.size();
-	int indexVar = (int)m_vars.size();
-	int indexCopy = m_names.at(cmd.midleName);
 	if (m_names.count(cmd.firstName))
 	{
-		indexVar = m_names.at(cmd.firstName);
-		indexFunc = m_vars[indexVar].function;
-		if (indexFunc == isNotFunc)
-		{
-			return false;
-		}
-		m_funcs[indexFunc].operandLeft = indexCopy;
-		m_funcs[indexFunc].operandRight = notValid;
-		m_funcs[indexFunc].operation = Operation::UNKNOWN;
-		UpdateChilds(UpdateFunc(indexFunc));
-		return true;
+		return ReinitOldFunc(cmd);
 	}
-	Func func;
-	func.name = cmd.firstName;
-	func.operandLeft = indexCopy;
-	func.childVar = indexVar;
-
-	Var var;
-	var.name = cmd.firstName;
-	var.function = indexFunc;
-
-	m_funcs.push_back(func);
-	m_vars.push_back(var);
-	m_names[var.name] = indexVar;
-
-	UpdateFunc(indexFunc);
-	return true;
-}
-
-bool Alu::CopyVar(const Cmd& cmd)
-{
-	if (!m_names.count(cmd.midleName))
-	{
-		return false;
-	}
-	int indexVar = (int)m_vars.size();
-	int indexCopy = m_names.at(cmd.midleName);
-	if (m_names.count(cmd.firstName))
-	{
-		indexVar = m_names.at(cmd.firstName);
-		if (m_vars[indexVar].function > isNotFunc)
-		{
-			return false;
-		}
-		m_vars[indexVar].value = m_vars[indexCopy].value;
-		UpdateChilds(indexVar);
-		return true;
-	}
-	Var var;
-	var.name = cmd.firstName;
-	var.value = m_vars[indexCopy].value;
-	m_vars.push_back(var);
-	m_names[var.name] = indexVar;
-	return true;
+	return CreateNewFunc(cmd);
 }
 
 bool Alu::ExecCmd(const Cmd& cmd)
@@ -205,16 +161,28 @@ bool Alu::ExecCmd(const Cmd& cmd)
 		return Declare(cmd);
 		break;
 	case TypeCmd::INIT_VAR:
-		return InitVar(cmd);
+		return HandlerVar(cmd);
 		break;
 	case TypeCmd::INIT_FUNC:
-		return InitFunc(cmd);
+		if (!m_names.count(cmd.midleName) || !m_names.count(cmd.lastName))
+		{
+			return false;
+		}
+		return HandlerFunc(cmd);
 		break;
 	case TypeCmd::COPY_FUNC:
-		return CopyFunc(cmd);
+		if (!m_names.count(cmd.midleName))
+		{
+			return false;
+		}
+		return HandlerFunc(cmd);
 		break;
 	case TypeCmd::COPY_VAR:
-		return CopyVar(cmd);
+		if (!m_names.count(cmd.midleName))
+		{
+			return false;
+		}
+		return HandlerVar(cmd);
 		break;
 	}
 	return false;
