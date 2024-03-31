@@ -6,6 +6,7 @@ int main()
 	std::string command;
 	while (std::getline(std::cin, command))
 	{
-		calc.Exec(command);
+		if (!calc.Exec(command))
+			std::cout << "Error!" << std::endl;
 	}
 }

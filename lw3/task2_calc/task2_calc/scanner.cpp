@@ -107,6 +107,8 @@ Cmd Scanner::GetDeclarationCmd(std::stringstream& ss)
 	Cmd cmd;
 	std::string word;
 	ss >> word;
+	if (!ss.eof())
+		return cmd;
 	std::smatch match;
 	if (std::regex_search(word, match, m_nameR))
 	{
