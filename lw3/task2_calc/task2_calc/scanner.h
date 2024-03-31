@@ -8,7 +8,7 @@ public:
 	Scanner();
 	Cmd GetCmd(const std::string&);
 private:
-	const std::regex _nameR;
+	const std::regex m_nameR;
 	Cmd GetDeclarationCmd(std::stringstream&);
 	Cmd GetInitVarCmd(std::stringstream&);
 	Cmd GetInitFuncCmd(std::stringstream&);

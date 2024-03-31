@@ -11,6 +11,6 @@ public:
 	void ShowFuncs(const std::vector<Var>&);
 	void ShowError(const std::string&);
 private:
-	std::ostream& _output;
-	std::streamsize _precisionOld;
+	std::ostream& m_output;
+	std::streamsize m_precisionOld;
 };

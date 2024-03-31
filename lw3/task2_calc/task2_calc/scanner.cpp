@@ -3,7 +3,7 @@
 #include "scanner.h"
 
 Scanner::Scanner()
-	: _nameR(std::regex(R"([a-zA-Z]+[0-9a-zA-Z]*)"))
+	: m_nameR(std::regex(R"([a-zA-Z]+[0-9a-zA-Z]*)"))
 {}
 
 Operation Scanner::GetOperation(std::string& str)
@@ -27,7 +27,7 @@ Cmd Scanner::GetInitFuncCmd(std::stringstream& ss)
 	std::smatch match;
 
 	ss >> word;
-	if (!std::regex_search(word, match, _nameR))
+	if (!std::regex_search(word, match, m_nameR))
 	{
 		return cmd;
 	}
@@ -40,7 +40,7 @@ Cmd Scanner::GetInitFuncCmd(std::stringstream& ss)
 	}
 
 	ss >> word;
-	if (!std::regex_search(word, match, _nameR))
+	if (!std::regex_search(word, match, m_nameR))
 	{
 		return cmd;
 	}
@@ -51,12 +51,12 @@ Cmd Scanner::GetInitFuncCmd(std::stringstream& ss)
 		cmd.operation = GetOperation(word);
 	else
 	{
-		cmd.type = TypeCmd::COPY;
+		cmd.type = TypeCmd::COPY_FUNC;
 		return cmd;
 	}
 
 	ss >> word;
-	if (!std::regex_search(word, match, _nameR))
+	if (!std::regex_search(word, match, m_nameR))
 	{
 		return cmd;
 	}
@@ -72,7 +72,7 @@ Cmd Scanner::GetInitVarCmd(std::stringstream& ss)
 	std::smatch match;
 
 	ss >> word;
-	if (!std::regex_search(word, match, _nameR))
+	if (!std::regex_search(word, match, m_nameR))
 	{
 		return cmd;
 	}
@@ -94,10 +94,10 @@ Cmd Scanner::GetInitVarCmd(std::stringstream& ss)
 
 	ss.clear();
 	ss >> word;
-	if (std::regex_search(word, match, _nameR))
+	if (std::regex_search(word, match, m_nameR))
 	{
 		cmd.midleName = match[0].str();
-		cmd.type = TypeCmd::COPY;
+		cmd.type = TypeCmd::COPY_VAR;
 	}
 	return cmd;
 }
@@ -108,7 +108,7 @@ Cmd Scanner::GetDeclarationCmd(std::stringstream& ss)
 	std::string word;
 	ss >> word;
 	std::smatch match;
-	if (std::regex_search(word, match, _nameR))
+	if (std::regex_search(word, match, m_nameR))
 	{
 		cmd.type = TypeCmd::DECLARATION;
 		cmd.firstName = match[0].str();
@@ -139,7 +139,7 @@ Cmd Scanner::GetCmd(const std::string& str)
 	{
 		std::smatch match;
 		ss >> word;
-		if (std::regex_search(word, match, _nameR))
+		if (std::regex_search(word, match, m_nameR))
 		{
 			cmd.firstName = match[0].str();
 			cmd.type = TypeCmd::PRINT;

@@ -13,7 +13,11 @@ private:
 	bool Declare(const Cmd& cmd);
 	bool InitVar(const Cmd& cmd);
 	void UpdateChilds(const int index);
-	std::vector<Var> _vars;
-	std::vector<Func> _funcs;
-	std::map<std::string, int> _names;
+	int UpdateFunc(const int index);
+	bool InitFunc(const Cmd& cmd);
+	bool CopyFunc(const Cmd& cmd);
+	bool CopyVar(const Cmd& cmd);
+	std::vector<Var> m_vars;
+	std::vector<Func> m_funcs;
+	std::map<std::string, int> m_names;
 };

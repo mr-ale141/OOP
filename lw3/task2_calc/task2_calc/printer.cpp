@@ -3,29 +3,29 @@
 const int precision = 2;
 
 Printer::Printer(std::ostream& output)
-	: _output(output)
+	: m_output(output)
 {
-	_output << std::fixed;
-	_precisionOld = _output.precision();
-	_output.precision(precision);
+	m_output << std::fixed;
+	m_precisionOld = m_output.precision();
+	m_output.precision(precision);
 }
 
 Printer::~Printer()
 {
-	_output.precision(_precisionOld);
-	_output << std::defaultfloat;
+	m_output.precision(m_precisionOld);
+	m_output << std::defaultfloat;
 }
 
 void Printer::ShowValue(const Var& var)
 {
-	_output << var.value << std::endl;
+	m_output << var.value << std::endl;
 }
 
 void Printer::ShowVars(const std::vector<Var>& vars)
 {
 	for (auto& var : vars)
 		if (var.function == notValid)
-			_output << var.name
+			m_output << var.name
 					<< ':'
 					<< var.value
 					<< std::endl;
@@ -35,7 +35,7 @@ void Printer::ShowFuncs(const std::vector<Var>& vars)
 {
 	for (auto& var : vars)
 		if (var.function > notValid)
-			_output << var.name
+			m_output << var.name
 					<< ':'
 					<< var.value
 					<< std::endl;
@@ -43,5 +43,5 @@ void Printer::ShowFuncs(const std::vector<Var>& vars)
 
 void Printer::ShowError(const std::string& msg)
 {
-	_output << "ERROR! " << msg << std::endl;
+	m_output << "ERROR! " << msg << std::endl;
 }

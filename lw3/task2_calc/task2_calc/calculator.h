@@ -10,7 +10,7 @@ public:
     Calculator(std::ostream&);
     bool Exec(const std::string&);
 private:
-    Alu _alu;
-    Printer _printer;
-    Scanner _scanner;
+    Alu m_alu;
+    Printer m_printer;
+    Scanner m_scanner;
 };

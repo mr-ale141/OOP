@@ -3,6 +3,9 @@
 int main()
 {
 	Calculator calc(std::cout);
-	calc.Exec("var x");
-	calc.Exec("print x");
+	std::string command;
+	while (std::getline(std::cin, command))
+	{
+		calc.Exec(command);
+	}
 }
