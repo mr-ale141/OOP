@@ -52,6 +52,8 @@ Cmd Scanner::GetInitFuncCmd(std::stringstream& ss)
 	else
 	{
 		cmd.type = TypeCmd::COPY_FUNC;
+		if (!ss.eof())
+			return Cmd{};
 		return cmd;
 	}
 
@@ -99,6 +101,8 @@ Cmd Scanner::GetInitVarCmd(std::stringstream& ss)
 		cmd.midleName = match[0].str();
 		cmd.type = TypeCmd::COPY_VAR;
 	}
+	if (!ss.eof())
+		return Cmd{};
 	return cmd;
 }
 
@@ -108,7 +112,7 @@ Cmd Scanner::GetDeclarationCmd(std::stringstream& ss)
 	std::string word;
 	ss >> word;
 	if (!ss.eof())
-		return cmd;
+		return Cmd{};
 	std::smatch match;
 	if (std::regex_search(word, match, m_nameR))
 	{
