@@ -27,7 +27,7 @@ bool Calculator::Exec(const std::string& str)
 		m_printer.ShowFuncs(m_alu.GetVars());
 		break;
 	case (TypeCmd::UNKNOWN):
-		m_printer.ShowError("ERROR! Incorrect command!");
+		m_printer.ShowError("Incorrect command!");
 		break;
 	}
 	return true;
