@@ -1,9 +1,10 @@
-#include <sstream>
+﻿#include <sstream>
 #include <algorithm>
 #include "scanner.h"
 
+// name regex
 Scanner::Scanner()
-	: m_nameR(std::regex(R"([a-zA-Z]+[0-9a-zA-Z]*)"))
+	: m_nameR(std::regex(R"(^[a-zA-Z]+[0-9a-zA-Z]*)"))
 {}
 
 Operation Scanner::GetOperation(std::string& str)
@@ -47,6 +48,7 @@ Cmd Scanner::GetInitFuncCmd(std::stringstream& ss)
 	cmd.midleName = match[0].str();
 
 	ss >> word;
+	// лишняя проверка убрать в метод get
 	if (word == "+" || word == "-" || word == "*" || word == "/")
 		cmd.operation = GetOperation(word);
 	else

@@ -7,8 +7,8 @@
 class Calculator
 {
 public:
-    Calculator(std::ostream&);
-    bool Exec(const std::string&);
+    Calculator(std::ostream& output);
+    bool Exec(const std::string& str);
 private:
     Alu m_alu;
     Printer m_printer;

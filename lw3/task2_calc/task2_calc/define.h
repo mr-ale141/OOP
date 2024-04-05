@@ -17,7 +17,7 @@ enum class Operation
     UNKNOWN
 };
 
-enum class TypeCmd
+enum class TypeCmd // commandType
 {
     DECLARATION,
     INIT_VAR,
@@ -30,12 +30,13 @@ enum class TypeCmd
     UNKNOWN
 };
 
-struct Cmd
+// cmd name
+struct Cmd // command
 {
-    TypeCmd type = TypeCmd::UNKNOWN;
-    std::string firstName;
-    std::string midleName;
-    std::string lastName;
+    TypeCmd type = TypeCmd::UNKNOWN; //commandType
+    std::string firstName; // entityName
+    std::string midleName;// middle, operationLeft
+    std::string lastName; // operationRight
     Operation operation = Operation::UNKNOWN;
     double value = std::numeric_limits<double>::quiet_NaN();
 };
@@ -44,15 +45,15 @@ struct Var
 {
     double value = std::numeric_limits<double>::quiet_NaN();
     std::string name;
-    int function = isNotFunc;
+    int function = isNotFunc; //funcIndex optional
     std::vector<int> childFuncs;
 };
 
 struct Func
 {
     std::string name;
-    int operandLeft = notValid;
-    int operandRight = notValid;
+    int operandLeft = notValid; // optional
+    int operandRight = notValid; // optional
     Operation operation = Operation::UNKNOWN;
-    int childVar = notValid;
+    int childVar = notValid; // varIndex
 };

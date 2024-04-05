@@ -1,9 +1,12 @@
 #include "alu.h"
-/*
-	std::vector<Var> m_vars;
-	std::vector<Func> m_funcs;
-	std::map<std::string, int> m_names;
-*/
+
+namespace
+{
+	bool IsInside(int item, std::vector<int>& arr)
+	{
+		return std::find(arr.begin(), arr.end(), item) != arr.end();
+	}
+}
 
 bool Alu::Declare(const Cmd& cmd)
 {
@@ -18,7 +21,8 @@ bool Alu::Declare(const Cmd& cmd)
 	m_names[var.name] = index;
 	return true;
 }
-
+// fn xy = x + y
+// let x = 1; let y = 2;
 int Alu::UpdateFuncValue(int indexFunc)
 {
 	if (indexFunc == isNotFunc)
@@ -44,11 +48,6 @@ int Alu::UpdateFuncValue(int indexFunc)
 		break;
 	}
 	return func.childVar;
-}
-
-bool Alu::IsInside(int item, std::vector<int>& arr)
-{
-	return std::find(arr.begin(), arr.end(), item) != arr.end();
 }
 
 bool Alu::IsChildDependence(int indexFunc, int indexVar)
@@ -90,7 +89,7 @@ void Alu::UpdateChildFuncs(int indexVar)
 	std::vector<int> needUpdate;
 	needUpdate.push_back(indexVar);
 
-	while (needUpdate.size())
+	while (needUpdate.size()) //empty
 	{
 		int parentVar = needUpdate.back();
 		needUpdate.pop_back();
@@ -131,6 +130,7 @@ bool Alu::ReinitOldVar(const Cmd& cmd)
 		return false;
 	}
 	double value = cmd.value;
+	// split in metod
 	if (cmd.midleName.size())
 	{
 		value = m_vars[m_names.at(cmd.midleName)].value;
@@ -146,6 +146,7 @@ bool Alu::ReinitOldVar(const Cmd& cmd)
 bool Alu::CreateNewVar(const Cmd& cmd)
 {
 	double value = cmd.value;
+	// split in metod
 	if (cmd.midleName.size())
 	{
 		value = m_vars[m_names.at(cmd.midleName)].value;

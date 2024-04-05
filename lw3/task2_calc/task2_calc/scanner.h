@@ -6,11 +6,11 @@ class Scanner
 {
 public:
 	Scanner();
-	Cmd GetCmd(const std::string&);
+	Cmd GetCmd(const std::string& str);
 private:
 	const std::regex m_nameR;
-	Cmd GetDeclarationCmd(std::stringstream&);
-	Cmd GetInitVarCmd(std::stringstream&);
-	Cmd GetInitFuncCmd(std::stringstream&);
-	Operation GetOperation(std::string&);
+	Cmd GetDeclarationCmd(std::stringstream& ss);
+	Cmd GetInitVarCmd(std::stringstream& ss);
+	Cmd GetInitFuncCmd(std::stringstream& ss);
+	Operation GetOperation(std::string& str);
 };

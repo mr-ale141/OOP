@@ -17,7 +17,6 @@ TEST_CASE("Not init var is NAN")
 			calc.Exec("print x");
 
 			std::string str;
-			output.clear();
 			std::getline(output, str);
 			THEN("answer is 'nan'")
 			{
@@ -27,7 +26,7 @@ TEST_CASE("Not init var is NAN")
 	}
 }
 
-TEST_CASE("Smoke")
+TEST_CASE("Funcs handler")
 {
 	GIVEN("calculator")
 	{
@@ -41,12 +40,36 @@ TEST_CASE("Smoke")
 			calc.Exec("print f");
 
 			std::string str;
-			output.clear();
 			std::getline(output, str);
 
 			THEN("answer is '10.00'")
 			{
 				REQUIRE(str == "10.00");
+			}
+		}
+	}
+}
+
+TEST_CASE("Update result func after change var")
+{
+	GIVEN("calculator")
+	{
+		std::stringstream output;
+		Calculator calc(output);
+
+		WHEN("execute commands")
+		{
+			calc.Exec("let x = 5");
+			calc.Exec("fn f = x + x");
+			calc.Exec("let x = 10");
+
+			calc.Exec("print f");
+			std::string str;
+			std::getline(output, str);
+
+			THEN("answer is '20.00'")
+			{
+				REQUIRE(str == "20.00");
 			}
 		}
 	}
@@ -85,8 +108,8 @@ TEST_CASE("fibonacci")
 				calc.Exec("let v1 = 1");
 
 				auto timeEnd = std::chrono::high_resolution_clock::now();
-				auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeBegin);
-				std::cout << "Delta Time = " << ms.count() << " ms" << std::endl;
+				auto us = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeBegin);
+				std::cout << "Delta Time = " << us.count() << " us" << std::endl;
 
 				calc.Exec("print fib50");
 				std::string str;
@@ -110,12 +133,14 @@ TEST_CASE("1 000 000 test")
 			calc.Exec("let x = 1");
 			calc.Exec("fn x2 = x + x");
 
+			std::cout << "Create funcs!" << std::endl;
 			for (size_t i = 3; i <= 1000000; i++)
 			{
 				input.str("");
 				input << "fn x" << i << " = " << "x" << i - 1 << " + x";
 				calc.Exec(input.str());
 			}
+
 			std::cout << "Start 1 000 000!" << std::endl;
 			THEN("execute")
 			{

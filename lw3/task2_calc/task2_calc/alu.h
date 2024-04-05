@@ -5,9 +5,9 @@
 class Alu
 {
 public:
-	Alu(){};
-	bool ExecCmd(const Cmd&);
-	Var GetVar(const std::string&) const;
+	Alu() = default;
+	bool ExecCmd(const Cmd& cmd);
+	Var GetVar(const std::string& name) const;
 	std::vector<Var> GetVars() const;
 private:
 	bool Declare(const Cmd& cmd);
@@ -23,7 +23,6 @@ private:
 	void AddChildFunc(int indexVar, int indexFunc);
 	void UpdateOperand(int& operand, int newVar, int indexFunc);
 	void SetDependentOperand(int& operand, int newOperand, int indexFunc);
-	bool IsInside(int item, std::vector<int>& arr);
 	bool IsChildDependence(int indexFunc, std::vector<int>& vars);
 	bool IsChildDependence(int indexFunc, int indexVar);
 	bool IsParent(int indexFunc, std::vector<int>& funcs);
