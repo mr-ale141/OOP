@@ -22,7 +22,11 @@ private:
 	void RemoveChildFunc(int indexVar, int indexFunc);
 	void AddChildFunc(int indexVar, int indexFunc);
 	void UpdateOperand(int& operand, int newVar, int indexFunc);
-	void SetOperand(int& operand, int newOperand, int indexFunc);
+	void SetDependentOperand(int& operand, int newOperand, int indexFunc);
+	bool IsInside(int item, std::vector<int>& arr);
+	bool IsChildDependence(int indexFunc, std::vector<int>& vars);
+	bool IsChildDependence(int indexFunc, int indexVar);
+	bool IsParent(int indexFunc, std::vector<int>& funcs);
 	std::vector<Var> m_vars;
 	std::vector<Func> m_funcs;
 	std::map<std::string, int> m_names;

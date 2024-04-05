@@ -46,6 +46,45 @@ int Alu::UpdateFuncValue(int indexFunc)
 	return func.childVar;
 }
 
+bool Alu::IsInside(int item, std::vector<int>& arr)
+{
+	return std::find(arr.begin(), arr.end(), item) != arr.end();
+}
+
+bool Alu::IsChildDependence(int indexFunc, int indexVar)
+{
+	return IsInside(indexFunc, m_vars[indexVar].childFuncs);
+}
+
+bool Alu::IsChildDependence(int indexFunc, std::vector<int>& vars)
+{
+	bool res = false;
+	for (auto item : vars)
+	{
+		if (IsInside(indexFunc, m_vars[item].childFuncs))
+		{
+			res = true;
+			break;
+		}
+	}
+	return res;
+}
+
+bool Alu::IsParent(int indexFunc, std::vector<int>& funcs)
+{
+	bool res = false;
+	int indexVar = m_funcs[indexFunc].childVar;
+	for (auto childFuncIndex : m_vars[indexVar].childFuncs)
+	{
+		if (IsInside(childFuncIndex, funcs))
+		{
+			res = true;
+			break;
+		}
+	}
+	return res;
+}
+
 void Alu::UpdateChildFuncs(int indexVar)
 {
 	std::vector<int> needUpdate;
@@ -53,14 +92,32 @@ void Alu::UpdateChildFuncs(int indexVar)
 
 	while (needUpdate.size())
 	{
-		int i = needUpdate.back();
+		int parentVar = needUpdate.back();
 		needUpdate.pop_back();
-		for (auto indexFunc : m_vars[i].childFuncs)
+		auto& parentVarRefs = m_vars[parentVar].childFuncs;
+		for (auto currentFunc : parentVarRefs)
 		{
-			int nextVar = UpdateFuncValue(indexFunc);
-			if (nextVar != notValid)
+			if (IsInside(m_funcs[currentFunc].childVar, needUpdate))
+				continue;
+			if (IsChildDependence(currentFunc, needUpdate))
+				continue;
+			int nextVar = UpdateFuncValue(currentFunc);
+			auto& childVarRefs = m_vars[nextVar].childFuncs;
+
+			for (auto nextFunc : childVarRefs)
 			{
-				needUpdate.push_back(nextVar);
+				if (IsInside(nextFunc, parentVarRefs))
+				{
+					if (IsParent(nextFunc, childVarRefs))
+						needUpdate.push_back(nextVar);
+					continue;
+				}
+
+				if (IsChildDependence(nextFunc, needUpdate))
+					continue;
+
+				if (!IsInside(nextVar, needUpdate))
+					needUpdate.push_back(nextVar);
 			}
 		}
 	}
@@ -78,8 +135,11 @@ bool Alu::ReinitOldVar(const Cmd& cmd)
 	{
 		value = m_vars[m_names.at(cmd.midleName)].value;
 	}
-	m_vars[indexVar].value = value;
-	UpdateChildFuncs(indexVar);
+	if (m_vars[indexVar].value != value)
+	{
+		m_vars[indexVar].value = value;
+		UpdateChildFuncs(indexVar);
+	}
 	return true;
 }
 
@@ -122,6 +182,8 @@ void Alu::AddChildFunc(int indexVar, int indexFunc)
 	if (indexVar == notValid)
 		return;
 	std::vector<int>& childFuncs = m_vars[indexVar].childFuncs;
+	if (std::find(childFuncs.begin(), childFuncs.end(), indexFunc) != childFuncs.end())
+		return;
 	childFuncs.push_back(indexFunc);
 }
 
@@ -132,7 +194,7 @@ void Alu::UpdateOperand(int& operand, int newOperand, int indexFunc)
 	AddChildFunc(operand, indexFunc);
 }
 
-void Alu::SetOperand(int& operand, int newOperand, int indexFunc)
+void Alu::SetDependentOperand(int& operand, int newOperand, int indexFunc)
 {
 	operand = newOperand;
 	AddChildFunc(operand, indexFunc);
@@ -162,9 +224,9 @@ bool Alu::CreateNewFunc(const Cmd& cmd)
 	Func func;
 	func.name = cmd.firstName;
 	func.operandLeft = m_names.at(cmd.midleName);
-	SetOperand(func.operandLeft, m_names.at(cmd.midleName), indexFunc);
+	SetDependentOperand(func.operandLeft, m_names.at(cmd.midleName), indexFunc);
 	if (!cmd.lastName.empty())
-		SetOperand(func.operandRight, m_names.at(cmd.lastName), indexFunc);
+		SetDependentOperand(func.operandRight, m_names.at(cmd.lastName), indexFunc);
 	func.operation = cmd.operation;
 	func.childVar = indexVar;
 
@@ -227,7 +289,11 @@ bool Alu::ExecCmd(const Cmd& cmd)
 
 Var Alu::GetVar(const std::string& name) const
 {
-	return m_vars[m_names.at(name)];
+	if (m_names.count(name))
+	{
+		return m_vars[m_names.at(name)];
+	}
+	return Var{};
 }
 
 std::vector<Var> Alu::GetVars() const
