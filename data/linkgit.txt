@@ -1,1 +1,4 @@
 https://github.com/alexey-malov/oop/tree/master/lectures/01
+
+Interface pattern
+https://habr.com/ru/articles/427281/
