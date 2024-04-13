@@ -1,7 +1,7 @@
 #include "CLineSegment.h"
 
 CLineSegment::CLineSegment(const CPoint& startPoint, const CPoint& endPoint, uint32_t outlineColor)
-	: m_startPoint(startPoint), m_endPoint(endPoint), m_outlineColor(outlineColor)
+	: CShape(outlineColor), m_startPoint(startPoint), m_endPoint(endPoint)
 {}
 
 CLineSegment::~CLineSegment()
@@ -9,7 +9,9 @@ CLineSegment::~CLineSegment()
 
 void CLineSegment::Draw(ICanvas& canvas) const
 {
-	std::cout << "not now" << std::endl;
+	auto lineColor = GetOutlineColor();
+
+	canvas.DrawLine(m_startPoint, m_endPoint, lineColor);
 }
 
 
@@ -25,25 +27,18 @@ double CLineSegment::GetPerimeter() const
 
 std::string CLineSegment::ToString() const
 {
-	return std::string("Line Segment");
-}
-
-uint32_t CLineSegment::GetOutlineColor() const
-{
-
+	std::string str("Type: " + m_name + "\n");
+	str += PointToString(m_startPoint, "Start Point");
+	str += PointToString(m_endPoint, "End Point");
+	return str;
 }
 
 CPoint CLineSegment::GetStartPoint() const
 {
-
+	return m_startPoint;
 }
 
 CPoint CLineSegment::GetEndPoint() const
 {
-
-}
-
-ShapePtr CLineSegment::CreateInstance(const CPoint& startPoint, const CPoint& endPoint, uint32_t outlineColor)
-{
-	return ShapePtr(new CLineSegment(startPoint, endPoint, outlineColor));
+	return m_endPoint;
 }
