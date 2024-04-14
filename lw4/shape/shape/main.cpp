@@ -1,24 +1,34 @@
 #include "ShapeList.h"
-#include "CCanvas.h"
 
-const std::string fileName("svg.html");
+#define USE_DEFAULT_FILE_NAME 1
+
+static std::string GetFileName()
+{
+#if USE_DEFAULT_FILE_NAME
+    return "svg.html";
+#elif
+    std::string str;
+    std::cout << "Enter file name for visualization:" << std::endl << ">";
+    std::getline(std::cin, str);
+    return str;
+#endif
+}
 
 int main()
 {
-    std::string str;
+    std::string fileName = GetFileName();
+
     ShapeList shapeList(fileName);
 
+    std::string str;
     std::cout << ">";
-
     while (std::getline(std::cin, str))
     {
         std::stringstream ss(str);
-
         if (!shapeList.Add(ss))
             std::cout << "Error!" << std::endl;
         else
             std::cout << "Ok." << std::endl;
-
         std::cout << ">";
     }
 

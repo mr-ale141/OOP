@@ -23,6 +23,7 @@ void CRectangle::Draw(ICanvas& canvas) const
 	canvas.DrawLine(m_leftTop, topR, lineColor);
 	canvas.DrawLine(topR, bottomR, lineColor);
 	canvas.DrawLine(bottomR, bottomL, lineColor);
+	canvas.DrawLine(bottomL, m_leftTop, lineColor);
 
 	std::vector<CPoint> points{ m_leftTop, topR, bottomR, bottomL };
 

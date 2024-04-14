@@ -23,6 +23,8 @@ public:
 
 	static void ShowHelp();
 
+	void ChangeCanvasI(ICanvas* newCanvas);
+
 protected:
 	bool AddTriangle(std::stringstream& ss);
 	bool AddRectangle(std::stringstream& ss);
@@ -36,4 +38,5 @@ private:
 	ShapePtr m_minArea = nullptr;
 	ShapePtr m_minPerimeter = nullptr;
 	CCanvas m_canvas;
+	ICanvas* m_mockCanvas = nullptr;
 };

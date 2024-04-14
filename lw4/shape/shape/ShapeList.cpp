@@ -38,12 +38,17 @@ bool ShapeList::Add(std::stringstream& ss)
 	else if (word == "?")
 	{
 		ShowHelp();
-		res = true;
+		return true;
 	}
 
-	auto drowableShape = std::dynamic_pointer_cast<ICanvasDrawable>(m_shapes.back());
-
-	drowableShape->Draw(m_canvas);
+	if (res == true)
+	{
+		auto drowableShape = std::dynamic_pointer_cast<ICanvasDrawable>(m_shapes.back());
+		if (m_mockCanvas == nullptr)
+			drowableShape->Draw(m_canvas);
+		else
+			drowableShape->Draw(*m_mockCanvas);
+	}
 
 	return res;
 }
@@ -66,24 +71,27 @@ bool ShapeList::AddRectangle(std::stringstream& ss)
 	uint32_t lineColor{};
 	uint32_t fillColor{};
 
-	if (!(ss >> topLeft.m_x))
+	int maxX = m_canvas.m_width;
+	int maxY = m_canvas.m_height;
+
+	if (!(ss >> topLeft.m_x) || topLeft.m_x < 0 || topLeft.m_x > maxX)
 		return false;
 
-	if (!(ss >> topLeft.m_y))
+	if (!(ss >> topLeft.m_y) || topLeft.m_y < 0 || topLeft.m_y > maxY)
 		return false;
 
-	if (!(ss >> width))
+	if (!(ss >> width) || width < 0 || width > maxX)
 		return false;
 
-	if (!(ss >> height))
+	if (!(ss >> height) || height < 0 || height > maxX)
 		return false;
 
 	ss >> std::hex;
 
-	if (!(ss >> lineColor))
+	if (!(ss >> lineColor) || lineColor < 0 || lineColor > 0xffffff)
 		return false;
 
-	if (!(ss >> fillColor))
+	if (!(ss >> fillColor) || fillColor < 0 || fillColor > 0xffffff)
 		return false;
 
 	ss >> std::dec;
@@ -106,30 +114,33 @@ bool ShapeList::AddTriangle(std::stringstream& ss)
 	uint32_t lineColor{};
 	uint32_t fillColor{};
 
-	if (!(ss >> v1.m_x))
+	int maxX = m_canvas.m_width;
+	int maxY = m_canvas.m_height;
+
+	if (!(ss >> v1.m_x) || v1.m_x < 0 || v1.m_x > maxX)
 		return false;
 
-	if (!(ss >> v1.m_y))
+	if (!(ss >> v1.m_y) || v1.m_y < 0 || v1.m_y > maxY)
 		return false;
 
-	if (!(ss >> v2.m_x))
+	if (!(ss >> v2.m_x) || v2.m_x < 0 || v2.m_x > maxX)
 		return false;
 
-	if (!(ss >> v2.m_y))
+	if (!(ss >> v2.m_y) || v2.m_y < 0 || v2.m_y > maxY)
 		return false;
 
-	if (!(ss >> v3.m_x))
+	if (!(ss >> v3.m_x) || v3.m_x < 0 || v3.m_x > maxX)
 		return false;
 
-	if (!(ss >> v3.m_y))
+	if (!(ss >> v3.m_y) || v3.m_y < 0 || v3.m_y > maxY)
 		return false;
 
 	ss >> std::hex;
 
-	if (!(ss >> lineColor))
+	if (!(ss >> lineColor) || lineColor < 0 || lineColor > 0xffffff)
 		return false;
 
-	if (!(ss >> fillColor))
+	if (!(ss >> fillColor) || fillColor < 0 || fillColor > 0xffffff)
 		return false;
 
 	ss >> std::dec;
@@ -151,21 +162,24 @@ bool ShapeList::AddCircle(std::stringstream& ss)
 	uint32_t lineColor{};
 	uint32_t fillColor{};
 
-	if (!(ss >> center.m_x))
+	int maxX = m_canvas.m_width;
+	int maxY = m_canvas.m_height;
+
+	if (!(ss >> center.m_x) || center.m_x < 0 || center.m_x > maxX)
 		return false;
 
-	if (!(ss >> center.m_y))
+	if (!(ss >> center.m_y) || center.m_y < 0 || center.m_y > maxY)
 		return false;
 
-	if (!(ss >> radius))
+	if (!(ss >> radius) || radius < 0 || radius > maxX)
 		return false;
 
 	ss >> std::hex;
 
-	if (!(ss >> lineColor))
+	if (!(ss >> lineColor) || lineColor < 0 || lineColor > 0xffffff)
 		return false;
 
-	if (!(ss >> fillColor))
+	if (!(ss >> fillColor) || fillColor < 0 || fillColor > 0xffffff)
 		return false;
 
 	ss >> std::dec;
@@ -186,21 +200,24 @@ bool ShapeList::AddLine(std::stringstream& ss)
 	CPoint end;
 	uint32_t lineColor{};
 
-	if (!(ss >> start.m_x))
+	int maxX = m_canvas.m_width;
+	int maxY = m_canvas.m_height;
+
+	if (!(ss >> start.m_x) || start.m_x < 0 || start.m_x > maxX)
 		return false;
 
-	if (!(ss >> start.m_y))
+	if (!(ss >> start.m_y) || start.m_y < 0 || start.m_y > maxY)
 		return false;
 
-	if (!(ss >> end.m_x))
+	if (!(ss >> end.m_x) || end.m_x < 0 || end.m_x > maxX)
 		return false;
 
-	if (!(ss >> end.m_y))
+	if (!(ss >> end.m_y) || end.m_y < 0 || end.m_y > maxY)
 		return false;
 
 	ss >> std::hex;
 
-	if (!(ss >> lineColor))
+	if (!(ss >> lineColor) || lineColor < 0 || lineColor > 0xffffff)
 		return false;
 
 	ss >> std::dec;
@@ -238,7 +255,7 @@ void ShapeList::UpdateMinPerimeter(ShapePtr shape)
 {
 	if (!m_minPerimeter)
 		m_minPerimeter = shape;
-	else if (shape->GetArea() < m_minPerimeter->GetArea())
+	else if (shape->GetPerimeter() < m_minPerimeter->GetPerimeter())
 		m_minPerimeter = shape;
 }
 
@@ -271,4 +288,9 @@ void ShapeList::ShowShape(ShapePtr shape)
 	std::cout << std::dec;
 
 	std::cout << iShape->ToString();
+}
+
+void ShapeList::ChangeCanvasI(ICanvas* mock)
+{
+	m_mockCanvas = mock;
 }

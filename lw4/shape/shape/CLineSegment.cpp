@@ -1,6 +1,9 @@
 #include "CLineSegment.h"
 
-CLineSegment::CLineSegment(const CPoint& startPoint, const CPoint& endPoint, uint32_t outlineColor)
+CLineSegment::CLineSegment(
+	const CPoint& startPoint, 
+	const CPoint& endPoint, 
+	uint32_t outlineColor)
 	: CShape(outlineColor), m_startPoint(startPoint), m_endPoint(endPoint)
 {}
 
@@ -13,7 +16,6 @@ void CLineSegment::Draw(ICanvas& canvas) const
 
 	canvas.DrawLine(m_startPoint, m_endPoint, lineColor);
 }
-
 
 double CLineSegment::GetArea() const
 {

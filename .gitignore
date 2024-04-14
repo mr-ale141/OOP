@@ -20,3 +20,5 @@ v14
 *.VC.VC.opendb
 *.vcxproj.user
 /lw4/shape/shape/svg.html
+/lw4/shape/tests/out
+/lw4/shape/tests/test.html
