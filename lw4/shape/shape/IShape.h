@@ -16,12 +16,13 @@ public:
 protected:
 	IShape() = default;
 	
+	//статические методы отдельно в класс
 	static double GetModule(const CPoint& p1, const CPoint& p2)
 	{
-		auto offset = p2 - p1;
+		const auto offset = p2 - p1;
 		return std::sqrt(offset.m_x * offset.m_x + offset.m_y * offset.m_y);
 	}
-
+	// std::move for namePoint
 	static std::string PointToString(const CPoint& point, std::string&& namePoint)
 	{
 		std::string str;

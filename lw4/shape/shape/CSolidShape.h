@@ -6,7 +6,8 @@ class CSolidShape : public ISolidShape
 {
 public:
 	virtual ~CSolidShape() = default;
-
+	
+	//getOutline ????????????? ?? Hollow
 	uint32_t GetOutlineColor() const final;
 	uint32_t GetFillColor() const final;
 

@@ -12,17 +12,11 @@ class ShapeList
 {
 public:
 	explicit ShapeList(const std::string& fileName, int width = 800, int height = 600);
-
 	bool Add(std::stringstream& ss);
-
 	ShapePtr GetMinArea() const;
-
 	ShapePtr GetMinPerimeter() const;
-
 	static void ShowShape(ShapePtr shape);
-
 	static void ShowHelp();
-
 	void ChangeCanvasI(ICanvas* newCanvas);
 
 protected:

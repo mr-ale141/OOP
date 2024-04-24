@@ -21,6 +21,7 @@ void CCircle::Draw(ICanvas& canvas) const
 
 double CCircle::GetArea() const
 {
+	// m_pi ????? ????? ????????
 	return std::atan(1) * 4 * m_radius * m_radius;
 }
 

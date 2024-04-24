@@ -13,7 +13,7 @@ static std::string GetFileName()
     return str;
 #endif
 }
-
+// max area
 int main()
 {
     std::string fileName = GetFileName();
