@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <iostream>
 #include <cstdint>
 #include <iomanip>
@@ -16,8 +16,7 @@ enum class WeekDay
     THURSDAY, FRIDAY, SATURDAY
 };
 
-static const unsigned days[]     = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
-static const unsigned daysLeap[] = { 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+// не возможно создать не валидное состояние
 
 class CDate
 {
@@ -41,18 +40,19 @@ public:
     CDate operator++(int);
     CDate operator--(int);
     // arithmetic
-    CDate operator+(int days);
-    CDate operator-(int days);
-    int operator-(CDate& d);
+    CDate operator+(int days) const;
+    // add int + CDate
+    CDate operator-(int days) const;
+    int operator-(const CDate& d) const;
     CDate& operator+=(int days);
     CDate& operator-=(int days);
     // compare
-    bool operator==(CDate& d);
-    bool operator!=(CDate& d);
-    bool operator>(CDate& d);
-    bool operator<(CDate& d);
-    bool operator>=(CDate& d);
-    bool operator<=(CDate& d);
+    bool operator==(const CDate& d) const;
+    bool operator!=(const CDate& d) const;
+    bool operator>(const CDate& d) const;
+    bool operator<(const CDate& d) const;
+    bool operator>=(const CDate& d) const;
+    bool operator<=(const CDate& d) const;
 
 private:
     void Update();

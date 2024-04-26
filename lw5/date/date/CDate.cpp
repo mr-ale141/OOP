@@ -1,4 +1,7 @@
-#include "CDate.h"
+﻿#include "CDate.h"
+
+static const unsigned days[]     = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+static const unsigned daysLeap[] = { 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
 CDate::CDate(unsigned day, Month month, unsigned year)
 {
@@ -101,7 +104,7 @@ CDate CDate::operator--(int)
 	return date;
 }
 
-CDate CDate::operator+(int days)
+CDate CDate::operator+(int days) const
 {
 	if (days < 0 && m_datestamp < (uint32_t)-days)
 		return CDate();
@@ -110,7 +113,7 @@ CDate CDate::operator+(int days)
 	return date;
 }
 
-CDate CDate::operator-(int days)
+CDate CDate::operator-(int days) const
 {
 	if (days > 0 && m_datestamp < (uint32_t)days)
 		return CDate();
@@ -119,7 +122,7 @@ CDate CDate::operator-(int days)
 	return date;
 }
 
-int CDate::operator-(CDate& d)
+int CDate::operator-(const CDate& d) const
 {
 	// + current day
 	return (int)m_datestamp - (int)d.GetDateStamp();
@@ -157,7 +160,7 @@ CDate& CDate::operator-=(int days)
 	return *this;
 }
 
-bool CDate::operator==(CDate& d)
+bool CDate::operator==(const CDate& d) const
 {
 	if (!IsValid() || !d.IsValid())
 		return false;
@@ -165,7 +168,7 @@ bool CDate::operator==(CDate& d)
 	return m_datestamp == d.GetDateStamp();
 }
 
-bool CDate::operator!=(CDate& d)
+bool CDate::operator!=(const CDate& d) const
 {
 	if (!IsValid() || !d.IsValid())
 		return false;
@@ -173,7 +176,7 @@ bool CDate::operator!=(CDate& d)
 	return m_datestamp != d.GetDateStamp();
 }
 
-bool CDate::operator>(CDate& d)
+bool CDate::operator>(const CDate& d) const
 {
 	if (!IsValid() || !d.IsValid())
 		return false;
@@ -181,7 +184,7 @@ bool CDate::operator>(CDate& d)
 	return m_datestamp > d.GetDateStamp();
 }
 
-bool CDate::operator<(CDate& d)
+bool CDate::operator<(const CDate& d) const
 {
 	if (!IsValid() || !d.IsValid())
 		return false;
@@ -189,7 +192,7 @@ bool CDate::operator<(CDate& d)
 	return m_datestamp < d.GetDateStamp();
 }
 
-bool CDate::operator>=(CDate& d)
+bool CDate::operator>=(const CDate& d) const
 {
 	if (!IsValid() || !d.IsValid())
 		return false;
@@ -197,7 +200,7 @@ bool CDate::operator>=(CDate& d)
 	return m_datestamp >= d.GetDateStamp();
 }
 
-bool CDate::operator<=(CDate& d)
+bool CDate::operator<=(const CDate& d) const
 {
 	if (!IsValid() || !d.IsValid())
 		return false;
@@ -235,18 +238,21 @@ bool CDate::SetDateStamp(unsigned day, Month month, unsigned year)
 	m_datestamp += day - 1;
 
 	// 01.01.1970 - THURSDAY + 1 (current day) 
-	m_week = (WeekDay)((m_datestamp + 4) % 7);
+	m_week = static_cast<WeekDay>((m_datestamp + 4) % 7);
 
 	return true;
 }
 
 unsigned CDate::UpdateYearAndGetRem()
 {
+	// упростить функцию сделать читабильнее
 	m_year = 1970;
-
-	static constexpr unsigned daysIn400Year = 365 * 400 + 97;              // 146 097
-	static constexpr unsigned daysIn100Year = 365 * 100 + 24;              // 36 524
-	static constexpr unsigned daysIn4Year = 365 * 4 + 1;                   // 1461
+	static constexpr unsigned leapsDaysIn400Year = 97;
+	static constexpr unsigned leapsDaysIn100Year = 24;
+	static constexpr unsigned leapsDaysIn4Year = 1;
+	static constexpr unsigned daysIn400Year = 365 * 400 + leapsDaysIn400Year;  // 146 097
+	static constexpr unsigned daysIn100Year = 365 * 100 + leapsDaysIn100Year;  // 36 524
+	static constexpr unsigned daysIn4Year = 365 * 4 + leapsDaysIn4Year;        // 1461
 	static constexpr unsigned daysInLast400YearBeforeEnd = 365 * 31 + 8;   // 11 323 (01/01/2001)
 
 	unsigned rem = 0;
@@ -294,10 +300,12 @@ unsigned CDate::UpdateYearAndGetRem()
 
 void CDate::Update()
 {
+	// calculate year
 	unsigned rem = UpdateYearAndGetRem();
 
 	unsigned month = 0;
 	
+	// add days
 	if (IsLeap(m_year))
 	{
 		while (rem >= daysLeap[month])
@@ -315,13 +323,14 @@ void CDate::Update()
 		}
 	}
 
-	m_month = (Month)(month + 1);
+	// static_cast
+	m_month = static_cast<Month>(month + 1);
 
 	// add current day
 	m_day = rem + 1;
 
 	// 01.01.1970 - THURSDAY + 1 (current day)
-	m_week = (WeekDay)((m_datestamp + 4) % 7);
+	m_week = static_cast<WeekDay>((m_datestamp + 4) % 7);
 }
 
 bool CDate::IsLeap(unsigned year) const

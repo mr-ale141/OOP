@@ -162,7 +162,7 @@ TEST_CASE("Create Date with any parameters")
 		}
 	}
 
-	GIVEN("Created date with start dey in year")
+	GIVEN("Created date with start day in year")
 	{
 		CDate date(1, Month::JANUARY, 2025);
 		WHEN("Print self")
@@ -179,7 +179,7 @@ TEST_CASE("Create Date with any parameters")
 		}
 	}
 
-	GIVEN("Created date with last dey in year")
+	GIVEN("Created date with last day in year")
 	{
 		CDate date(31, Month::DECEMBER, 2025);
 		WHEN("Print self")
@@ -196,7 +196,7 @@ TEST_CASE("Create Date with any parameters")
 		}
 	}
 
-	GIVEN("Created date with last dey in year")
+	GIVEN("Created date with 29 feb")
 	{
 		CDate date(29, Month::FEBRUARY, 2024);
 		WHEN("Print self")
