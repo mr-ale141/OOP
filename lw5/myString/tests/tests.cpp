@@ -407,3 +407,31 @@ TEST_CASE("Operator >>")
 		}
 	}
 }
+
+TEST_CASE("Operator iterator")
+{
+	GIVEN("Some stringstream")
+	{
+		CMyString str("IS UPPER STRING");
+
+		WHEN("get value")
+		{
+			auto it = str.begin();
+			THEN("Compare value")
+			{
+				REQUIRE(*it == str.GetStringData()[0]);
+			}
+		}
+
+		WHEN("tolower")
+		{
+			std::transform(str.begin(), str.end(), str.begin(),
+				[](unsigned char c) { return std::tolower(c); });
+			THEN("Compare value")
+			{
+				std::string data(str.GetStringData());
+				REQUIRE(data == "is upper string");
+			}
+		}
+	}
+}
