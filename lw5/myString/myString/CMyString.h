@@ -35,8 +35,8 @@ public:
     
     CMyStringIterator<char> begin();
     CMyStringIterator<char> end();
-    CMyStringConstIterator<char> cbegin() const;
-    CMyStringConstIterator<char> cend() const;
+    CMyStringConstIterator<char> cbegin();
+    CMyStringConstIterator<char> cend();
 
 private:
     size_t m_capacity = defaultCap;

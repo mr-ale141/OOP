@@ -408,7 +408,7 @@ TEST_CASE("Operator >>")
 	}
 }
 
-TEST_CASE("Operator iterator")
+TEST_CASE("Iterator")
 {
 	GIVEN("Some stringstream")
 	{
@@ -431,6 +431,21 @@ TEST_CASE("Operator iterator")
 			{
 				std::string data(str.GetStringData());
 				REQUIRE(data == "is upper string");
+			}
+		}
+	}
+
+	GIVEN("Some stringstream")
+	{
+		CMyString str("54389061");
+
+		WHEN("sort")
+		{
+			std::sort(str.begin(), str.end());
+			THEN("Compare value")
+			{
+				std::string data(str.GetStringData());
+				REQUIRE(data == "01345689");
 			}
 		}
 	}

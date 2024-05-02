@@ -1,7 +1,7 @@
-﻿#include "CMyString.h"
-#include <cstring>
+﻿#include <cstring>
 #include <algorithm>
 #include <stdexcept>
+#include "CMyString.h"
 
 static char emptyString[] = "";
 
@@ -225,13 +225,13 @@ CMyStringIterator<char> CMyString::end()
 	return i;
 }
 
-CMyStringConstIterator<char> CMyString::cbegin() const
+CMyStringConstIterator<char> CMyString::cbegin()
 {
 	CMyStringConstIterator<char> i(m_string);
 	return i;
 }
 
-CMyStringConstIterator<char> CMyString::cend() const
+CMyStringConstIterator<char> CMyString::cend()
 {
 	CMyStringConstIterator<char> i(m_string + m_length);
 	return i;

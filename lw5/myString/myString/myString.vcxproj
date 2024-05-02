@@ -132,8 +132,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CMyString.cpp" />
-    <ClCompile Include="CMyStringConstIterator.cpp" />
-    <ClCompile Include="CMyStringIterator.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -144,8 +144,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\myString\CMyString.cpp" />
-    <ClCompile Include="..\myString\CMyStringConstIterator.cpp" />
-    <ClCompile Include="..\myString\CMyStringIterator.cpp" />
     <ClCompile Include="tests.cpp" />
   </ItemGroup>
   <ItemGroup>
