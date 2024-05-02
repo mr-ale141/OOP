@@ -21,9 +21,21 @@
     <ClCompile Include="..\myString\CMyString.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\myString\CMyStringConstIterator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\myString\CMyStringIterator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\myString\CMyString.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\myString\CMyStringConstIterator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\myString\CMyStringIterator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

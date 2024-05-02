@@ -144,10 +144,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\myString\CMyString.cpp" />
+    <ClCompile Include="..\myString\CMyStringConstIterator.cpp" />
+    <ClCompile Include="..\myString\CMyStringIterator.cpp" />
     <ClCompile Include="tests.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\myString\CMyString.h" />
+    <ClInclude Include="..\myString\CMyStringConstIterator.h" />
+    <ClInclude Include="..\myString\CMyStringIterator.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

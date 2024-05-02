@@ -1,83 +1,10 @@
 ﻿#pragma once
 #include <string>
 #include <iostream>
-#include <iterator>
+#include "CMyStringIterator.h"
+#include "CMyStringConstIterator.h"
 
 static const size_t defaultCap = 15;
-
-class CMyString;
-
-template<typename T>
-class CMyStringIterator
-{
-    using iterator_category = std::random_access_iterator_tag;
-    using difference_type = std::ptrdiff_t;
-    using value_type = T;
-    using pointer = T*;
-    using reference = T&;
-
-    friend class CMyString;
-public:
-    CMyStringIterator(const CMyStringIterator& iter) = default;
-    bool operator==(const CMyStringIterator& iter) const;
-    bool operator!=(const CMyStringIterator& iter) const;
-    bool operator<(const CMyStringIterator& iter) const;
-    bool operator>(const CMyStringIterator& iter) const;
-    T& operator*();
-    CMyStringIterator& operator++();
-    CMyStringIterator& operator--();
-    CMyStringIterator operator++(int);
-    CMyStringIterator operator--(int);
-    size_t operator-(const CMyStringIterator& iter) const;
-    CMyStringIterator<T> operator+(int i);
-    CMyStringIterator<T>& operator+=(int i);
-    CMyStringIterator<T>& operator-=(int i);
-    CMyStringIterator(T* ptr);
-private:
-    T* m_ptr = nullptr;
-};
-
-template<typename T>
-static CMyStringIterator<T> operator+(int i, const CMyStringIterator<T>& iter)
-{
-    return iter + i;
-}
-
-template<typename T>
-class CMyStringConstIterator
-{
-    using iterator_category = std::random_access_iterator_tag;
-    using difference_type = std::ptrdiff_t;
-    using value_type = const T;
-    using pointer = T*;
-    using reference = const T&;
-
-    friend class CMyString;
-public:
-    CMyStringConstIterator(const CMyStringConstIterator& iter) = default;
-    bool operator==(const CMyStringConstIterator& iter) const;
-    bool operator!=(const CMyStringConstIterator& iter) const;
-    bool operator<(const CMyStringConstIterator& iter) const;
-    bool operator>(const CMyStringConstIterator& iter) const;
-    const T& operator*() const;
-    CMyStringConstIterator& operator++();
-    CMyStringConstIterator& operator--();
-    CMyStringConstIterator operator--(int);
-    CMyStringConstIterator operator++(int);
-    size_t operator-(const CMyStringConstIterator& iter);
-    CMyStringConstIterator<T> operator+(int i);
-    CMyStringConstIterator<T>& operator+=(int i);
-    CMyStringConstIterator<T>& operator-=(int i);
-    CMyStringConstIterator(const T* ptr);
-private:
-    const T* m_ptr = nullptr;
-};
-
-template<typename T>
-static CMyStringConstIterator<T> operator+(int i, const CMyStringConstIterator<T>& iter)
-{
-    return iter + i;
-}
 
 class CMyString
 {
