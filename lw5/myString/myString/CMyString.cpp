@@ -5,9 +5,13 @@
 
 static char emptyString[] = "";
 
+// noexcept
+// чтобы std::move при перемещающем конструкторе не переместил адрес внутренний другого объекта
+// т.к. string хранит до 15 символов внутри себя 
 CMyString::CMyString() : m_string(emptyString)
 {}
 
+//использовать делегирующий конструктор
 CMyString::CMyString(const char* pString)
 {
 	m_length = strlen(pString);
@@ -19,7 +23,7 @@ CMyString::CMyString(const char* pString)
 
 CMyString::CMyString(const char* pString, size_t length)
 {
-	m_length = length;
+	m_length = length == SIZE_MAX ? strlen(pString) : length;
 	if (m_length >= m_capacity - 1)
 		m_capacity = m_length * 2;
 	m_string = new char[m_capacity];
@@ -27,6 +31,7 @@ CMyString::CMyString(const char* pString, size_t length)
 	m_string[m_length] = '\0';
 }
 
+// использовать список инициализации везде где можно
 CMyString::CMyString(CMyString const& other)
 {
 	m_length = other.m_length;
@@ -45,7 +50,9 @@ CMyString::CMyString(CMyString&& other) noexcept
 	other.m_capacity = defaultCap;
 }
 
-CMyString::CMyString(std::string const& stlString) : CMyString(stlString.c_str())
+//use with lenstr
+// т.к. не корректно сработает для "some\0string"
+CMyString::CMyString(std::string const& str) : CMyString(str.c_str())
 {}
 
 CMyString::~CMyString()
@@ -66,6 +73,7 @@ const char* CMyString::GetStringData()const
 
 CMyString CMyString::SubString(size_t start, size_t length)const
 {
+	// index 0 and after '\0'
 	return CMyString(&m_string[start - 1], length);
 }
 
@@ -73,7 +81,7 @@ void CMyString::Clear()
 {
 	m_capacity = defaultCap;
 	m_length = 0;
-	this->~CMyString();
+	this->~CMyString();// нельзя
 	m_string = emptyString;
 }
 
@@ -89,6 +97,7 @@ CMyString& CMyString::operator=(const CMyString& str)
 	Clear();
 	m_capacity = str.m_capacity;
 	m_length = str.m_length;
+	// m_strin not valid if except
 	m_string = new char[m_capacity];
 	std::memcpy(m_string, str.m_string, m_length + 1);
 	return *this;
@@ -100,7 +109,7 @@ CMyString CMyString::operator+(const CMyString& str) const
 	newStr.m_length = m_length + str.m_length;
 	if (newStr.m_length >= newStr.m_capacity)
 		newStr.m_capacity = newStr.m_length * 2;
-	newStr.m_string = new char[newStr.m_capacity];
+	newStr.m_string = new char[newStr.m_capacity];// with except not valid, use private constructor(ptr, len, cap)
 	std::memcpy(newStr.m_string, m_string, m_length);
 	std::memcpy(newStr.m_string + m_length, str.m_string, str.m_length + 1);
 	return newStr;
@@ -108,6 +117,7 @@ CMyString CMyString::operator+(const CMyString& str) const
 
 CMyString& CMyString::operator+=(const CMyString& str)
 {
+	// optimizate
 	for (size_t i = 0; i < str.m_length; i++)
 	{
 		*this += str.m_string[i];
@@ -131,6 +141,7 @@ CMyString& CMyString::operator+=(char ch)
 
 	++m_length;
 	m_capacity = m_length * 2;
+	//if except not valid
 	m_string = new char[m_capacity];
 
 	std::memcpy(m_string, holdPtr, holdLength);
@@ -144,6 +155,7 @@ CMyString& CMyString::operator+=(char ch)
 
 bool CMyString::operator==(const CMyString& str) const
 {
+	//дублирование
 	if (m_length != str.m_length)
 		return false;
 	bool b = true;
@@ -215,24 +227,22 @@ char CMyString::operator[](size_t i) const
 
 CMyStringIterator<char> CMyString::begin()
 {
-	CMyStringIterator<char> i(m_string);
-	return i;
+	return CMyStringIterator<char>(m_string);
 }
 
 CMyStringIterator<char> CMyString::end()
 {
-	CMyStringIterator<char> i(m_string + m_length);
-	return i;
+	return CMyStringIterator<char>(m_string + m_length);
 }
 
 CMyStringConstIterator<char> CMyString::cbegin()
 {
-	CMyStringConstIterator<char> i(m_string);
-	return i;
+	// return const CMyStringIterator<char>(m_string);
+	return CMyStringConstIterator<char>(m_string);
 }
 
 CMyStringConstIterator<char> CMyString::cend()
 {
-	CMyStringConstIterator<char> i(m_string + m_length);
-	return i;
+	// return const CMyStringIterator<char>(m_string);
+	return CMyStringConstIterator<char>(m_string + m_length);
 }

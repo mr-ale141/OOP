@@ -16,6 +16,7 @@ TEST_CASE("Public methods")
 			THEN("Compare value")
 			{
 				REQUIRE(data == "");
+				REQUIRE(str == "");
 			}
 		}
 	}
@@ -29,6 +30,7 @@ TEST_CASE("Public methods")
 			THEN("Compare value")
 			{
 				REQUIRE(data == "Empty str");
+				REQUIRE(str == "Empty str");
 			}
 		}
 	}
@@ -64,6 +66,7 @@ TEST_CASE("Public methods")
 			THEN("Compare value")
 			{
 				REQUIRE(data == data1);
+				REQUIRE(str == str1);
 			}
 		}
 	}
@@ -294,6 +297,7 @@ TEST_CASE("Operator <, <=  and >, >=")
 				REQUIRE(!(myStr > str2));
 				REQUIRE(!(myStr >= str2));
 				REQUIRE(myStr <= str2);
+				REQUIRE(!(CMyString("308") < CMyString("21")));
 			}
 		}
 
@@ -414,28 +418,47 @@ TEST_CASE("Iterator")
 	{
 		CMyString str("IS UPPER STRING");
 
-		WHEN("get value")
+		WHEN("get value with arifmetic and increment")
 		{
 			auto it = str.begin();
 			THEN("Compare value")
 			{
 				REQUIRE(*it == str.GetStringData()[0]);
 			}
+
+			THEN("Prefix inc compare value")
+			{
+				++it;
+				REQUIRE(*it == str.GetStringData()[1]);
+			}
+
+			THEN("Postfix inc compare value")
+			{
+				it++;
+				REQUIRE(*it == str.GetStringData()[1]);
+			}
+
+			THEN("Move iterator")
+			{
+				auto newIt = it + 2;
+				REQUIRE(*newIt == str.GetStringData()[2]);
+				newIt -= 2;
+				REQUIRE(*newIt == str.GetStringData()[0]);
+			}
 		}
 
-		WHEN("tolower")
+		WHEN("std::tolower")
 		{
 			std::transform(str.begin(), str.end(), str.begin(),
 				[](unsigned char c) { return std::tolower(c); });
 			THEN("Compare value")
 			{
-				std::string data(str.GetStringData());
-				REQUIRE(data == "is upper string");
+				REQUIRE(str == "is upper string");
 			}
 		}
 	}
 
-	GIVEN("Some stringstream")
+	GIVEN("std::sort")
 	{
 		CMyString str("54389061");
 
@@ -444,8 +467,7 @@ TEST_CASE("Iterator")
 			std::sort(str.begin(), str.end());
 			THEN("Compare value")
 			{
-				std::string data(str.GetStringData());
-				REQUIRE(data == "01345689");
+				REQUIRE(str == "01345689");
 			}
 		}
 	}

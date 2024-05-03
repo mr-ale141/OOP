@@ -1,6 +1,17 @@
 #pragma once
 #include <iterator>
 
+/*!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+template <bool IsConst>
+class IteratorT
+{
+public:
+    using value_type = std::conditional_t<IsConst, const char, char>;
+    using difference_type = std::ptrdiff_t;
+
+};
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
+
 template<typename T>
 class CMyStringIterator
 {
@@ -10,8 +21,6 @@ public:
     using iterator_category = std::random_access_iterator_tag;
     using difference_type = std::ptrdiff_t;
     using value_type = T;
-    using pointer = T*;
-    using reference = T&;
 
     T& operator*() const;
 
@@ -109,19 +118,16 @@ __int64 CMyStringIterator<T>::operator-(const CMyStringIterator<T>& iter) const
 	return m_ptr - iter.m_ptr;
 }
 
-
 template<typename T>
 CMyStringIterator<T> CMyStringIterator<T>::operator+(__int64 i)
 {
-	CMyStringIterator<char> newIter(m_ptr += i);
-	return newIter;
+	return CMyStringIterator<char>(m_ptr += i);
 }
 
 template<typename T>
 CMyStringIterator<T> CMyStringIterator<T>::operator-(__int64 i)
 {
-	CMyStringIterator<char> newIter(m_ptr -= i);
-	return newIter;
+	return CMyStringIterator<char>(m_ptr -= i);
 }
 
 template<typename T>

@@ -21,20 +21,28 @@ public:
     CMyString SubString(size_t start, size_t length = SIZE_MAX) const;
     void Clear();
     size_t GetCapacity() const;
+    //добавить перемещающий оператор присваивания
     CMyString& operator=(const CMyString& str);
     CMyString operator+(const CMyString& str) const;
     CMyString& operator+=(const CMyString& str);
     CMyString& operator+=(char ch);
+    // <=> with weak ordering
+    // эквивалентные объекты
+    // через публичные методы и поля можно определить отличаются они или нет
     bool operator==(const CMyString& str) const;
     bool operator!=(const CMyString& str) const;
+    // not work
     bool operator<(const CMyString& str) const;
     bool operator>(const CMyString& str) const;
     bool operator<=(const CMyString& str) const;
     bool operator>=(const CMyString& str) const;
     char operator[](size_t i) const;
     
+    // and const for 'range base for'
     CMyStringIterator<char> begin();
     CMyStringIterator<char> end();
+    // use const CMyStringIterator
+    // const
     CMyStringConstIterator<char> cbegin();
     CMyStringConstIterator<char> cend();
 
