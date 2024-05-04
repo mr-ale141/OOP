@@ -47,7 +47,7 @@ CMyString::CMyString(CMyString&& other) noexcept
 	m_string = std::move(other.m_string);
 	other.m_string = emptyString;
 	other.m_length = 0;
-	other.m_capacity = defaultCap;
+	other.m_capacity = defaultCap; // = 0
 }
 
 //use with lenstr
@@ -186,6 +186,7 @@ bool CMyString::operator<(const CMyString& str) const
 		return m_length < str.m_length;
 
 	bool b = false;
+	// not work "308" < "21"
 	for (size_t i = 0; i < std::min(m_length, str.m_length); ++i)
 	{
 		b = m_string[i] < str.m_string[i];
