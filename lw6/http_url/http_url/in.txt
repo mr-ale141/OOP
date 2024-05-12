@@ -1,0 +1,16 @@
+HTTP://wWw.mySIte.coM/docs/document1.html?page=30&lang=en#title
+HTTPs://wWw.mySIte.coM/docs/document1.html?page=30&lang=en#title
+http://wWw.mySIte.coM/docs/document1.html?page=30&lang=en#title
+https://wWw.mySIte.coM/docs/document1.html?page=30&lang=en#title
+https://wWw.mySIte.com/docs/document1.html?page=30&lang=en#title
+https://www.mysite.com563/docs/document1.html?page=30&lang=en#title
+https://www.com563/docs/document1.html?page=30&lang=en#title
+https://www.com:65536/docs/document1.html?page=30&lang=en#title
+https://www.com:0/docs/document1.html?page=30&lang=en#title
+https://www.com:-56/docs/document1.html?page=30&lang=en#title
+https://com:-56/docs/document1.html?page=30&lang=en#title
+https://com/docs/document1.html?page=30&lang=en#title
+https://com
+http://www.mysite.com
+http://www.mysite.com:495
+http://www.mysite.com495
