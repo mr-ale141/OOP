@@ -12,7 +12,7 @@ public:
 };
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
 
-template<typename T>
+template<bool IsConst = false>
 class CMyStringIterator
 {
 public:
@@ -20,9 +20,11 @@ public:
 
     using iterator_category = std::random_access_iterator_tag;
     using difference_type = std::ptrdiff_t;
-    using value_type = T;
+    using reference_type = std::conditional_t<IsConst, const char&, char&>;
+    using pointer_type = std::conditional_t<IsConst, const char*, char*>;
+    using value_type = std::conditional_t<IsConst, const char, char>;
 
-    T& operator*() const;
+    reference_type operator*() const;
 
     CMyStringIterator(const CMyStringIterator& iter) = default;
     bool operator==(const CMyStringIterator& iter) const;
@@ -34,117 +36,117 @@ public:
     CMyStringIterator operator++(int);
     CMyStringIterator operator--(int);
     __int64 operator-(const CMyStringIterator& iter) const;
-    CMyStringIterator<T> operator+(__int64 i);
-    CMyStringIterator<T> operator-(__int64 i);
-    CMyStringIterator<T>& operator+=(__int64 i);
-    CMyStringIterator<T>& operator-=(__int64 i);
+    CMyStringIterator<IsConst> operator+(__int64 i);
+    CMyStringIterator<IsConst> operator-(__int64 i);
+    CMyStringIterator<IsConst>& operator+=(__int64 i);
+    CMyStringIterator<IsConst>& operator-=(__int64 i);
     ~CMyStringIterator() = default;
 protected:
     CMyStringIterator() = default;
 private:
-    CMyStringIterator(T* ptr);
-    T* m_ptr = nullptr;
+    CMyStringIterator(pointer_type ptr);
+    pointer_type m_ptr = nullptr;
 };
 
-template<typename T>
-bool CMyStringIterator<T>::operator==(const CMyStringIterator<T>& iter) const
+template<bool IsConst>
+bool CMyStringIterator<IsConst>::operator==(const CMyStringIterator<IsConst>& iter) const
 {
     return m_ptr == iter.m_ptr;
 }
 
-template<typename T>
-static CMyStringIterator<T> operator+(__int64 i, const CMyStringIterator<T>& iter)
+template<bool IsConst>
+static CMyStringIterator<IsConst> operator+(__int64 i, const CMyStringIterator<IsConst>& iter)
 {
     return iter + i;
 }
 
-template<typename T>
-bool CMyStringIterator<T>::operator!=(const CMyStringIterator<T>& iter) const
+template<bool IsConst>
+bool CMyStringIterator<IsConst>::operator!=(const CMyStringIterator<IsConst>& iter) const
 {
 	return m_ptr != iter.m_ptr;
 }
 
-template<typename T>
-bool CMyStringIterator<T>::operator<(const CMyStringIterator<T>& iter) const
+template<bool IsConst>
+bool CMyStringIterator<IsConst>::operator<(const CMyStringIterator<IsConst>& iter) const
 {
 	return m_ptr < iter.m_ptr;
 }
 
-template<typename T>
-bool CMyStringIterator<T>::operator>(const CMyStringIterator<T>& iter) const
+template<bool IsConst>
+bool CMyStringIterator<IsConst>::operator>(const CMyStringIterator<IsConst>& iter) const
 {
 	return m_ptr > iter.m_ptr;
 }
 
-template<typename T>
-T& CMyStringIterator<T>::operator*() const
+template<bool IsConst>
+CMyStringIterator<IsConst>::reference_type CMyStringIterator<IsConst>::operator*() const
 {
 	return *m_ptr;
 }
 
-template<typename T>
-CMyStringIterator<T>& CMyStringIterator<T>::operator++()
+template<bool IsConst>
+CMyStringIterator<IsConst>& CMyStringIterator<IsConst>::operator++()
 {
 	++m_ptr;
 	return *this;
 }
 
-template<typename T>
-CMyStringIterator<T> CMyStringIterator<T>::operator++(int)
+template<bool IsConst>
+CMyStringIterator<IsConst> CMyStringIterator<IsConst>::operator++(int)
 {
-	CMyStringIterator<char> old(m_ptr);
+	CMyStringIterator<IsConst> old(m_ptr);
 	++m_ptr;
 	return old;
 }
 
-template<typename T>
-CMyStringIterator<T>& CMyStringIterator<T>::operator--()
+template<bool IsConst>
+CMyStringIterator<IsConst>& CMyStringIterator<IsConst>::operator--()
 {
 	--m_ptr;
 	return *this;
 }
 
-template<typename T>
-CMyStringIterator<T> CMyStringIterator<T>::operator--(int)
+template<bool IsConst>
+CMyStringIterator<IsConst> CMyStringIterator<IsConst>::operator--(int)
 {
-	CMyStringIterator<char> old(m_ptr);
+	CMyStringIterator<IsConst> old(m_ptr);
 	--m_ptr;
 	return old;
 }
 
-template<typename T>
-__int64 CMyStringIterator<T>::operator-(const CMyStringIterator<T>& iter) const
+template<bool IsConst>
+__int64 CMyStringIterator<IsConst>::operator-(const CMyStringIterator<IsConst>& iter) const
 {
 	return m_ptr - iter.m_ptr;
 }
 
-template<typename T>
-CMyStringIterator<T> CMyStringIterator<T>::operator+(__int64 i)
+template<bool IsConst>
+CMyStringIterator<IsConst> CMyStringIterator<IsConst>::operator+(__int64 i)
 {
-	return CMyStringIterator<char>(m_ptr += i);
+	return CMyStringIterator<IsConst>(m_ptr += i);
 }
 
-template<typename T>
-CMyStringIterator<T> CMyStringIterator<T>::operator-(__int64 i)
+template<bool IsConst>
+CMyStringIterator<IsConst> CMyStringIterator<IsConst>::operator-(__int64 i)
 {
-	return CMyStringIterator<char>(m_ptr -= i);
+	return CMyStringIterator<IsConst>(m_ptr -= i);
 }
 
-template<typename T>
-CMyStringIterator<T>& CMyStringIterator<T>::operator+=(__int64 i)
+template<bool IsConst>
+CMyStringIterator<IsConst>& CMyStringIterator<IsConst>::operator+=(__int64 i)
 {
 	m_ptr += i;
 	return *this;
 }
 
-template<typename T>
-CMyStringIterator<T>& CMyStringIterator<T>::operator-=(__int64 i)
+template<bool IsConst>
+CMyStringIterator<IsConst>& CMyStringIterator<IsConst>::operator-=(__int64 i)
 {
 	m_ptr -= i;
 	return *this;
 }
 
-template<typename T>
-CMyStringIterator<T>::CMyStringIterator(T* ptr)
+template<bool IsConst>
+CMyStringIterator<IsConst>::CMyStringIterator(CMyStringIterator<IsConst>::pointer_type ptr)
 	: m_ptr(ptr)
 {}

@@ -1,7 +1,7 @@
+/*
 #pragma once
 #include <iterator>
 #include "CMyStringIterator.h"
-
 template<typename T>
 class CMyStringConstIterator : public CMyStringIterator<T>
 {
@@ -36,3 +36,4 @@ const T& CMyStringConstIterator<T>::operator*() const
 {
     return *m_ptr;
 }
+*/

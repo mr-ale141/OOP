@@ -119,7 +119,7 @@ TEST_CASE("Public methods")
 		CMyString str("Empty str");
 		WHEN("Get str data")
 		{
-			std::string data(str.SubString(5, 3).GetStringData());
+			std::string data(str.SubString(4, 3).GetStringData());
 			THEN("Compare value")
 			{
 				REQUIRE(data == "y s");
@@ -149,7 +149,7 @@ TEST_CASE("Public methods")
 			auto len = str.GetCapacity();
 			THEN("Compare value")
 			{
-				REQUIRE(len == defaultCap);
+				REQUIRE(len == str.GetLength() * 2);
 			}
 		}
 	}

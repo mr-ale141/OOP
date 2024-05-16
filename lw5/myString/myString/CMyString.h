@@ -1,16 +1,15 @@
 ﻿#pragma once
 #include <string>
 #include <iostream>
+#include <compare>
 #include "CMyStringIterator.h"
 #include "CMyStringConstIterator.h"
-
-static const size_t defaultCap = 15;
 
 class CMyString
 {
 public:
     CMyString();
-    CMyString(const char* pString);
+    explicit CMyString(const char* pString);
     CMyString(const char* pString, size_t length);
     CMyString(CMyString const& other);
     CMyString(CMyString&& other) noexcept;
@@ -26,28 +25,30 @@ public:
     CMyString operator+(const CMyString& str) const;
     CMyString& operator+=(const CMyString& str);
     CMyString& operator+=(char ch);
+
     // <=> with weak ordering
     // эквивалентные объекты
     // через публичные методы и поля можно определить отличаются они или нет
+    auto operator<=>(const CMyString& str) const
+    {
+        return std::strcmp(m_string, str.m_string) <=> 0;
+    }
+
     bool operator==(const CMyString& str) const;
-    bool operator!=(const CMyString& str) const;
-    // not work
-    bool operator<(const CMyString& str) const;
-    bool operator>(const CMyString& str) const;
-    bool operator<=(const CMyString& str) const;
-    bool operator>=(const CMyString& str) const;
+    bool operator==(const char* str) const;
+
     char operator[](size_t i) const;
     
     // and const for 'range base for'
-    CMyStringIterator<char> begin();
-    CMyStringIterator<char> end();
+    CMyStringIterator<false> begin();
+    CMyStringIterator<false> end();
     // use const CMyStringIterator
     // const
-    CMyStringConstIterator<char> cbegin();
-    CMyStringConstIterator<char> cend();
+    CMyStringIterator<true> cbegin();
+    CMyStringIterator<true> cend();
 
 private:
-    size_t m_capacity = defaultCap;
+    size_t m_capacity = 0;
     char* m_string = nullptr;
     size_t m_length = 0;
 };
