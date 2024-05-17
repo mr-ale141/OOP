@@ -99,7 +99,7 @@ TEST_CASE("URL with negative PORT")
 	REQUIRE(false);
 }
 
-TEST_CASE("URL with oferflow PORT")
+TEST_CASE("URL with overflow PORT")
 {
 	std::string urlStr("http://www.mysite.com:65536/docs/document1.html?page=30&lang=en#title");
 
@@ -132,12 +132,12 @@ TEST_CASE("URL without Protocol")
 	REQUIRE(false);
 }
 
-TEST_CASE("URL without doamain")
+// это валидный тест
+TEST_CASE("URL without domain")
 {
 	std::string urlStr("http://mysite/docs/document1.html?page=30&lang=en#title");
 	// обрабатывать исключение в тестах так
 	REQUIRE_THROWS_AS(CHttpUrl(urlStr), std::invalid_argument);
-
 }
 
 TEST_CASE("URL with //host.ru:/")
