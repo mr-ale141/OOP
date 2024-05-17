@@ -1,10 +1,9 @@
-#include <regex>
+﻿#include <regex>
 #include <algorithm>
 #include <cctype>
 #include <limits>
 #include <cassert>
 #include "CHttpUrl.h"
-#include "CUrlParsingError.h"
 
 namespace
 {
@@ -23,7 +22,7 @@ namespace
     {
         std::string lower(str);
         std::transform(lower.cbegin(), lower.cend(), lower.begin(),
-            [](unsigned char c) { return std::tolower(c); });
+            [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
         return lower;
     }
 
@@ -55,9 +54,11 @@ CHttpUrl::CHttpUrl(const std::string& url)
 
         Protocol protocol = GetProtocolEnum(protocolStr);
 
+        //убрать предупреждения до 4 уровня
         if (!portStr.empty())
         {
             int port = std::stoi(portStr);
+            // проверять граничные значения
             if (port > std::numeric_limits<unsigned short>::max())
                 throw std::invalid_argument("ERROR: Port in URL is out of range!");
             m_port = static_cast<unsigned short>(port);
@@ -79,7 +80,9 @@ CHttpUrl::CHttpUrl(const std::string& url)
         throw std::invalid_argument("ERROR: URL-string is not valid!");
     }    
 }
-
+// localhost - is valid
+// port 0 - not valid
+// перехватывать исключение   stoi
 CHttpUrl::CHttpUrl(
     std::string const& domain,
     std::string const& document,
@@ -99,15 +102,14 @@ CHttpUrl::CHttpUrl(
     Protocol protocol,
     unsigned short port
 ) 
-    : 
-    m_protocol(protocol), 
-    m_port(port)
 {
     std::string domainValidated = PullDomain(domain);
     std::string documentValidated = PullDocument(document);
 
     m_domain = std::move(domainValidated);
     m_document = std::move(documentValidated);
+    m_protocol = protocol;
+    m_port = port;
 }
 
 std::string CHttpUrl::GetURL() const
@@ -124,7 +126,7 @@ std::string CHttpUrl::GetURL() const
         url += std::to_string(m_port);
     }
     url += m_document;
-    return std::move(url);
+    return url;
 }
 
 std::string CHttpUrl::GetDomain() const

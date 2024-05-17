@@ -1,4 +1,4 @@
-#define CATCH_CONFIG_MAIN
+﻿#define CATCH_CONFIG_MAIN
 #include "../../../Catch2/catch.hpp"
 #include "../http_url/CHttpUrl.h"
 #include <iostream>
@@ -83,6 +83,38 @@ TEST_CASE("URL with PORT")
 	}
 }
 
+TEST_CASE("URL with negative PORT")
+{
+	std::string urlStr("http://www.mysite.com:-1/docs/document1.html?page=30&lang=en#title");
+
+	try
+	{
+		CHttpUrl url(urlStr);
+	}
+	catch (...)
+	{
+		REQUIRE(true);
+		return;
+	}
+	REQUIRE(false);
+}
+
+TEST_CASE("URL with oferflow PORT")
+{
+	std::string urlStr("http://www.mysite.com:65536/docs/document1.html?page=30&lang=en#title");
+
+	try
+	{
+		CHttpUrl url(urlStr);
+	}
+	catch (...)
+	{
+		REQUIRE(true);
+		return;
+	}
+	REQUIRE(false);
+}
+
 TEST_CASE("URL without Protocol")
 {
 	std::string urlStr("www.mysite.com:569/docs/document1.html?page=30&lang=en#title");
@@ -103,18 +135,9 @@ TEST_CASE("URL without Protocol")
 TEST_CASE("URL without doamain")
 {
 	std::string urlStr("http://mysite/docs/document1.html?page=30&lang=en#title");
+	// обрабатывать исключение в тестах так
+	REQUIRE_THROWS_AS(CHttpUrl(urlStr), std::invalid_argument);
 
-	try
-	{
-		CHttpUrl url(urlStr);
-	}
-	catch (const std::exception& e)
-	{
-		std::cout << e.what() << std::endl;
-		REQUIRE(true);
-		return;
-	}
-	REQUIRE(false);
 }
 
 TEST_CASE("URL with //host.ru:/")
