@@ -4,7 +4,7 @@
 
 static bool Cmp(int l, int r) { return l < r; }
 
-TEST_CASE("Smoke test")
+TEST_CASE("Max element inside")
 {
 	GIVEN("Vector")
 	{
@@ -76,6 +76,44 @@ TEST_CASE("no maximum element")
 			{
 				REQUIRE(result == false);
 				REQUIRE(max == oldMax);
+			}
+		}
+	}
+}
+
+TEST_CASE("Empty vector")
+{
+	GIVEN("Vector")
+	{
+		std::vector<int> v;
+
+		WHEN("Get max")
+		{
+			int max{};
+			bool result = FindMax(v, max, Cmp);
+			THEN("Compare max")
+			{
+				REQUIRE(result == false);
+				REQUIRE(max == 0);
+			}
+		}
+	}
+}
+
+TEST_CASE("One element")
+{
+	GIVEN("Vector")
+	{
+		std::vector<int> v = { 105 };
+
+		WHEN("Get max")
+		{
+			int max{};
+			bool result = FindMax(v, max, Cmp);
+			THEN("Compare max")
+			{
+				REQUIRE(result == false);
+				REQUIRE(max == 0);
 			}
 		}
 	}

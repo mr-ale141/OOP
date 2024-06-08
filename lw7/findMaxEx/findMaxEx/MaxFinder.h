@@ -1,31 +1,30 @@
-#pragma once
+﻿#pragma once
 #include <vector>
 
 template<typename T, typename Less>
-bool FindMax(const std::vector<T>& arr, T& maxValue, const Less& less)
+bool FindMax(const std::vector<T>& arr, T& maxValue, const Less& less) noexcept
 {
-	bool answer = false; 
+	bool answer = false;
+
 	if (arr.empty())
 		return answer;
 
-	T oldValue = std::move(maxValue);
-
-	maxValue = arr[0];
-	for (auto& item : arr)
+	const T* value = &arr[0];
+	for (const auto& item : arr)
 	{
-		if (less(maxValue, item))
+		if (less(*value, item))
 		{
-			maxValue = item;
+			value = &item;
 			answer = true;
 		}
-		else if (less(item, maxValue))
+		else if (less(item, *value))
 		{
 			answer = true;
 		}
 	}
 
-	if (!answer)
-		maxValue = std::move(oldValue);
+	if (answer)
+		maxValue = *value;
 	
 	return answer;
 };
