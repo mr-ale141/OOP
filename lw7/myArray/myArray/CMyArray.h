@@ -1,8 +1,8 @@
 ﻿#pragma once
 #include <stdexcept>
 #include <memory>
+#include <type_traits>
 #include "CMyArrayIterator.h"
-#include "CMyArrayReverseIterator.h"
 
 template<typename T>
 class CMyArray
@@ -12,6 +12,8 @@ public:
 	~CMyArray();
 
 	explicit CMyArray(size_t size);
+
+	void Assign(const CMyArrayIterator<T, true> begin, const CMyArrayIterator<T, true> end);
 	
 	CMyArray(const CMyArray<T>& other);
 	CMyArray& operator=(const CMyArray<T>& other);
@@ -19,8 +21,8 @@ public:
 	CMyArray(CMyArray<T>&& other) noexcept;
 	CMyArray& operator=(CMyArray<T>&& other) noexcept;
 
-	size_t Size() const;
-	void Clear();
+	size_t Size() const noexcept;
+	void Clear() noexcept;
 
 	T& operator[](size_t pos);
 	const T& operator[](size_t pos) const;
@@ -28,26 +30,27 @@ public:
 	void Resize(size_t size);
 
 	void PushBack(const T& newItem);
-	void PushBack(const T&& newItem);
+	void PushBack(T&& newItem);
 
 	CMyArrayIterator<T, false> begin() { return CMyArrayIterator<T, false>(m_data); }
-	CMyArrayIterator<T, true> begin() const { return CMyArrayIterator<T, true>(m_data); }
+	const CMyArrayIterator<T, false> begin() const { return begin(); }
 	CMyArrayIterator<T, true> cbegin() const { return CMyArrayIterator<T, true>(m_data); }
 
 	CMyArrayIterator<T, false> end() { return CMyArrayIterator<T, false>(m_data + m_size); }
-	CMyArrayIterator<T, true> end() const { return CMyArrayIterator<T, true>(m_data + m_size); }
+	const CMyArrayIterator<T, false> end() const { return end(); }
 	CMyArrayIterator<T, true> cend() const { return CMyArrayIterator<T, true>(m_data + m_size); }
+	
+	auto rbegin() { return std::make_reverse_iterator(end()); }
+	const auto rbegin() const { return rbegin(); }
+	auto crbegin() const { return std::make_reverse_iterator(cend()); }
 
-	CMyArrayReverseIterator<T, false> rbegin() { return CMyArrayReverseIterator<T, false>(m_data + m_size - 1); }
-	CMyArrayReverseIterator<T, true> rbegin() const { return CMyArrayReverseIterator<T, true>(m_data + m_size - 1); }
-	CMyArrayReverseIterator<T, true> crbegin() const { return CMyArrayReverseIterator<T, true>(m_data + m_size - 1); }
-
-	CMyArrayReverseIterator<T, false> rend() { return CMyArrayReverseIterator<T, false>(m_data - 1); }
-	CMyArrayReverseIterator<T, true> rend() const { return CMyArrayReverseIterator<T, true>(m_data - 1); }
-	CMyArrayReverseIterator<T, true> crend() const { return CMyArrayReverseIterator<T, true>(m_data - 1); }
+	auto rend() { return std::make_reverse_iterator(begin()); }
+	const auto rend() const { return rend(); }
+	auto crend() const { return std::make_reverse_iterator(cbegin()); }
 
 private:
 	static T* Allocate(size_t n);
+	static T* Reallocate(T* oldData, size_t oldSize, size_t newCapacity);
 	static void Deallocate(T* buf) noexcept;
 	static void DestroyN(T* buf, size_t n) noexcept;
 	static void Destroy(T* buf) noexcept;
@@ -66,19 +69,49 @@ T* CMyArray<T>::Allocate(size_t n)
 }
 
 template<typename T>
-void CMyArray<T>::Deallocate(T* buf) noexcept {
+T* CMyArray<T>::Reallocate(T* oldData, size_t oldSize, size_t newCapacity)
+{
+	T* newData = nullptr;
+	size_t i = 0;
+	try
+	{
+		newData = Allocate(newCapacity);
+		for (; i != oldSize; ++i)
+			new (newData + i) T(oldData[i]);
+	}
+	catch (...)
+	{
+		DestroyN(newData, i);
+		Deallocate(newData);
+		throw;
+	}
+
+	DestroyN(oldData, oldSize);
+	Deallocate(oldData);
+
+	oldData = nullptr;
+	
+	return newData;
+}
+
+template<typename T>
+void CMyArray<T>::Deallocate(T* buf) noexcept
+{
 	operator delete(buf);
 }
 
 template<typename T>
-void CMyArray<T>::DestroyN(T* buf, size_t n) noexcept {
-	for (size_t i = 0; i != n; ++i) {
+void CMyArray<T>::DestroyN(T* buf, size_t n) noexcept
+{
+	for (size_t i = 0; i != n; ++i)
+	{
 		Destroy(buf + i);
 	}
 }
 
 template<typename T>
-void CMyArray<T>::Destroy(T* buf) noexcept {
+void CMyArray<T>::Destroy(T* buf) noexcept
+{
 	buf->~T();
 }
 
@@ -112,6 +145,39 @@ CMyArray<T>::~CMyArray()
 }
 
 template<typename T>
+void CMyArray<T>::Assign(const CMyArrayIterator<T, true> otherBegin, const CMyArrayIterator<T, true> otherEnd)
+{
+	auto iterThis = begin();
+	auto iterOther = otherBegin;
+	while (iterThis != end() && iterOther != otherEnd)
+	{
+		*iterThis = *iterOther;
+		++iterThis;
+		++iterOther;
+	}
+
+	// в текущем объекте не хватило места
+	if (iterThis == end() && iterOther != otherEnd)
+	{
+		size_t newCapacity = otherEnd - otherBegin;
+		T* newData = Reallocate(m_data, m_size, newCapacity);
+		m_capacity = newCapacity;
+		
+		std::uninitialized_copy_n(iterOther, otherEnd - iterOther, newData);
+		m_data = newData;
+		m_size = newCapacity;
+	}
+
+	// в текущем объекте остались лишние элементы
+	if (iterThis != end() && iterOther == otherEnd)
+	{
+		size_t newSize = otherEnd - otherBegin;
+		DestroyN(m_data + m_size, newSize - m_size);
+		m_size = newSize;
+	}
+}
+
+template<typename T>
 CMyArray<T>::CMyArray(const CMyArray<T>& other)
 	: m_data(Allocate(other.m_capacity)),
 	m_capacity(other.m_capacity),
@@ -123,11 +189,6 @@ CMyArray<T>::CMyArray(const CMyArray<T>& other)
 		for (; i != m_size; ++i)
 		{
 			new (m_data + i) T(other[i]);
-		}
-
-		for (; i != m_capacity; ++i)
-		{
-			new (m_data + i) T();
 		}
 	}
 	catch (...)
@@ -144,18 +205,7 @@ CMyArray<T>& CMyArray<T>::operator=(const CMyArray<T>& other)
 	if (m_data == other.m_data)
 		return *this;
 
-	CMyArray<T> arr(other);
-
-	DestroyN(m_data, m_capacity);
-	Deallocate(m_data);
-
-	m_data = std::move(arr.m_data);
-	m_size = arr.m_size;
-	m_capacity = arr.m_capacity;
-
-	arr.m_data = nullptr;
-	arr.m_size = 0;
-	arr.m_capacity = 0;
+	Assign(other.cbegin(), other.cend());
 
 	return *this;
 }
@@ -179,42 +229,34 @@ CMyArray<T>& CMyArray<T>::operator=(CMyArray<T>&& other) noexcept
 
 	DestroyN(m_data, m_size);
 	Deallocate(m_data);
-
-	m_data = nullptr;
-	std::swap(m_data, other.m_data);
 	
-	m_capacity = 0;
-	std::swap(m_capacity, other.m_capacity);
-
-	m_size = 0;
-	std::swap(m_size, other.m_size);
+	m_data = std::exchange(other.m_data, nullptr);
+	m_size = std::exchange(other.m_size, 0);
+	m_capacity = std::exchange(other.m_capacity, 0);
 
 	return *this;
 }
 
 template<typename T>
-size_t CMyArray<T>::Size() const
+size_t CMyArray<T>::Size() const noexcept
 {
 	return m_size;
 }
 
 template<typename T>
-void CMyArray<T>::Clear()
+void CMyArray<T>::Clear() noexcept
 {
-	if (m_capacity == 0)
+	if (m_size == 0)
 		return;
 
-	DestroyN(m_data, m_capacity);
-	Deallocate(m_data);
-	m_data = nullptr;
-	m_capacity = 0;
+	DestroyN(m_data, m_size);
 	m_size = 0;
 }
 
 template<typename T>
 T& CMyArray<T>::operator[](size_t pos)
 {
-	if (pos < 0 || pos >= m_size)
+	if (pos >= m_size)
 		throw std::out_of_range("ERROR! Access outside the array");
 
 	return *(m_data + pos);
@@ -223,107 +265,73 @@ T& CMyArray<T>::operator[](size_t pos)
 template<typename T>
 const T& CMyArray<T>::operator[](size_t pos) const
 {
-	if (pos < 0 || pos >= m_size)
+	if (pos >= m_size)
 		throw std::out_of_range("ERROR! Access outside the array");
 
 	return *(m_data + pos);
 }
 
 template<typename T>
-void CMyArray<T>::Resize(size_t size)
+void CMyArray<T>::Resize(size_t newSize)
 {
-	if (size < 0)
-		throw std::invalid_argument("ERROR! Size cannot be less than zero.");
-
-	if (size == m_size)
+	if (newSize == m_size)
 		return;
 
-	if (size > m_size && size <= m_capacity)
+	if (newSize < m_size)
 	{
-		m_size = size;
+		DestroyN(m_data + newSize, m_size - newSize);
+		m_size = newSize;
 		return;
 	}
 
-	if (size < m_size)
+	// если не хватает места увеличиваем размер контейнера
+	if (newSize > m_capacity)
 	{
-		DestroyN(m_data + size, m_size - size);
-		std::uninitialized_default_construct_n(m_data + size, m_size - size);
-		m_size = size;
-		return;
+		m_data = Reallocate(m_data, m_size, newSize);
+		m_capacity = newSize;
 	}
-	
+
+	// заполняем элементами по умолчанию
 	size_t i = m_size;
-	T* newData = nullptr;
 	try
 	{
-		newData = Allocate(size);
-		for (; i != size; ++i)
-			new (newData + i) T();
+		for (; i != newSize; ++i)
+			new (m_data + i) T();
 	}
 	catch (...)
 	{
-		DestroyN(newData + m_size, i - m_size);
-		Deallocate(newData);
+		DestroyN(m_data + m_size, i - m_size);
 		throw;
 	}
 
-	// перемещаю элементы
-	std::uninitialized_move_n(m_data, m_size, newData);
-
-	// удаляю хвосты
-	DestroyN(m_data + m_size, m_capacity - m_size);
-
-	Deallocate(m_data);
-	m_data = newData;
-	m_capacity = size;
-	m_size = size;
+	m_size = newSize;
 }
 
 template<typename T>
 void CMyArray<T>::PushBack(const T& newItem)
 {
-	T item(newItem);
-	PushBack(std::move(newItem));
+	PushBack(std::move(T(newItem)));
 }
 
 template<typename T>
-void CMyArray<T>::PushBack(const T&& newItem)
+void CMyArray<T>::PushBack(T&& newItem)
 {
-	if (m_capacity - m_size >= 1)
+	if (m_capacity == m_size)
+	{
+		size_t newCapacity = m_capacity == 0 ? 1 : m_capacity * 2;
+		m_data = Reallocate(m_data, m_size, newCapacity);
+		m_capacity = newCapacity;
+	}
+
+	if constexpr (std::is_nothrow_move_assignable_v<T>)
 	{
 		std::uninitialized_move_n(&newItem, 1, m_data + m_size);
-		++m_size;
-		return;
 	}
-
-	size_t newCapacity = m_capacity == 0 ? 1 : m_capacity * 2;
-	size_t posStartDefaultItems = m_size + 1;
-	size_t i = posStartDefaultItems;
-	T* newData = nullptr;
-	try
+	else
 	{
-		newData = Allocate(newCapacity);
-		for (; i != newCapacity; ++i)
-			new (newData + i) T();
+		std::uninitialized_copy_n(&newItem, 1, m_data + m_size);
+		Destroy(&newItem);
 	}
-	catch (...)
-	{
-		DestroyN(newData + posStartDefaultItems, i - posStartDefaultItems);
-		Deallocate(newData);
-		throw;
-	}
-
-	// записываем новый элемент
-	std::uninitialized_move_n(&newItem, 1, newData + m_size);
-
-	// перемещаем старые элементы
-	std::uninitialized_move_n(m_data, m_size, newData);
-
-	// разрушаем хвост
-	DestroyN(m_data + m_size, m_capacity - m_size);
-
-	Deallocate(m_data);
-	m_data = newData;
-	m_capacity = newCapacity;
+	
 	++m_size;
 }

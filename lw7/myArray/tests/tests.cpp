@@ -2,6 +2,7 @@
 #include "../../../Catch2/catch.hpp"
 #include <iostream>
 #include <string>
+#include <sstream>
 #include <stdexcept>
 
 #define private public // для строки 88 проверка увеличения емкости в 2 раза
@@ -64,11 +65,11 @@ TEST_CASE("Resize and Clear")
 			arr.PushBack("Hello");
 			REQUIRE(arr.Size() == 1);
 
-			THEN("Push, resize Compare value")
-			{
-				arr.PushBack("World!");
-				REQUIRE(arr.Size() == 2);
+			arr.PushBack("World!");
+			REQUIRE(arr.Size() == 2);
 
+			THEN("Resize and Compare value")
+			{
 				arr.Resize(4);
 
 				REQUIRE(arr[0] == "Hello");
@@ -128,7 +129,7 @@ TEST_CASE("Copy constructor and =")
 			REQUIRE(arr[1] == "World!");
 			REQUIRE_THROWS_AS(arr[2], std::out_of_range);
 
-			THEN("Push again and Compare value")
+			THEN("Create with copy constructor and Compare value")
 			{
 				CMyArray<std::string> arr2(arr);
 
@@ -216,6 +217,37 @@ TEST_CASE("Move constructor and =")
 	}
 }
 
+TEST_CASE("Push back with move")
+{
+	GIVEN("Empty array")
+	{
+		CMyArray<std::string> arr;
+		REQUIRE(arr.Size() == 0);
+
+		WHEN("Push with move")
+		{
+			std::string str("Hello");
+			arr.PushBack(std::move(str));
+			REQUIRE(arr.Size() == 1);
+
+			THEN("Push again and Compare value")
+			{
+				std::string str2("World!");
+
+				arr.PushBack(std::move(str2));
+				REQUIRE(arr.Size() == 2);
+
+				REQUIRE(arr[0] == "Hello");
+				REQUIRE(arr[1] == "World!");
+				REQUIRE_THROWS_AS(arr[2], std::out_of_range);
+
+				REQUIRE(str == "");
+				REQUIRE(str2 == "");
+			}
+		}
+	}
+}
+
 TEST_CASE("Iterators")
 {
 	GIVEN("Empty array")
@@ -259,6 +291,17 @@ TEST_CASE("Iterators")
 				auto itEnd = arr.rend();
 				--itEnd;
 				REQUIRE(*itEnd == "Hello");
+			}
+
+			THEN("Print with range base for")
+			{
+				std::stringstream ss;
+				for (auto& item : arr)
+				{
+					ss << item;
+				}
+				std::string outString(ss.str());
+				REQUIRE(outString == "HelloWorld!");
 			}
 		}
 	}

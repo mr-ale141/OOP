@@ -3,6 +3,8 @@
 #include <iomanip>
 #include "CMyArray.h"
 
+#include <vector>
+
 template<typename T>
 static void PrintArr(CMyArray<T>& arr)
 {
@@ -33,6 +35,10 @@ int main()
 	PrintArr(arrString);
 	std::cout << "----------------------------------------" << std::endl;
 
+	CMyArray<std::string> arrString2;
+
+	arrString2 = arrString;
+
 	arrDouble.PushBack(1.1);
 	arrDouble.PushBack(0.1);
 	arrDouble.PushBack(1.0000000001);
@@ -43,4 +49,6 @@ int main()
 
 	std::cout << "arrString[2] = " << arrString[2] << std::endl;
 	std::cout << "arrDouble[2] = " << arrDouble[2] << std::endl;
+
+
 }
