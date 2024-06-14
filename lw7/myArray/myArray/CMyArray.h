@@ -88,7 +88,7 @@ T* CMyArray<T>::Reallocate(T* oldData, size_t oldSize, size_t newCapacity)
 
 	DestroyN(oldData, oldSize);
 	Deallocate(oldData);
-
+	// лишнее
 	oldData = nullptr;
 	
 	return newData;
@@ -131,6 +131,7 @@ CMyArray<T>::CMyArray(size_t size)
 	}
 	catch (...)
 	{
+		// кандидат на устранение дубоирования
 		DestroyN(m_data, i);
 		Deallocate(m_data);
 		throw;
@@ -145,6 +146,7 @@ CMyArray<T>::~CMyArray()
 }
 
 template<typename T>
+// alias для итераторов
 void CMyArray<T>::Assign(const CMyArrayIterator<T, true> otherBegin, const CMyArrayIterator<T, true> otherEnd)
 {
 	auto iterThis = begin();
@@ -160,9 +162,11 @@ void CMyArray<T>::Assign(const CMyArrayIterator<T, true> otherBegin, const CMyAr
 	if (iterThis == end() && iterOther != otherEnd)
 	{
 		size_t newCapacity = otherEnd - otherBegin;
+		// решение о реалокации принято поздно
 		T* newData = Reallocate(m_data, m_size, newCapacity);
 		m_capacity = newCapacity;
-		
+		// можно использовать std::uninitialized_copy
+		// если исключение удалить
 		std::uninitialized_copy_n(iterOther, otherEnd - iterOther, newData);
 		m_data = newData;
 		m_size = newCapacity;
@@ -212,9 +216,9 @@ CMyArray<T>& CMyArray<T>::operator=(const CMyArray<T>& other)
 
 template<typename T>
 CMyArray<T>::CMyArray(CMyArray<T>&& other) noexcept
-	: m_data(std::move(other.m_data)),
-	m_capacity(other.m_capacity),
-	m_size(other.m_size)
+	: m_data(std::move(other.m_data))
+	, m_capacity(other.m_capacity)
+	, m_size(other.m_size)
 {
 	other.m_data = nullptr;
 	other.m_size = 0;
@@ -310,9 +314,10 @@ void CMyArray<T>::Resize(size_t newSize)
 template<typename T>
 void CMyArray<T>::PushBack(const T& newItem)
 {
-	PushBack(std::move(T(newItem)));
+	PushBack(T(newItem));
 }
 
+// не корректно при вставке элемента из текущего массива
 template<typename T>
 void CMyArray<T>::PushBack(T&& newItem)
 {

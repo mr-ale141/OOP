@@ -22,7 +22,7 @@ bool FindMax(const std::vector<T>& arr, T& maxValue, const Less& less) noexcept
 			answer = true;
 		}
 	}
-
+	// для одного
 	if (answer)
 		maxValue = *value;
 	
